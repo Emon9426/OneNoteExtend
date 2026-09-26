@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>OneExtend code block feature: grammar-driven tokenizer, SQL/PL-SQL beautifier, themes and OneNote page-XML generation. Pure library, no OneNote dependency.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OneExtend.Core\OneExtend.Core.csproj" />
+  </ItemGroup>
+
+</Project>

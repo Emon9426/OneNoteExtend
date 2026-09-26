@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OneExtend — OneNote 代码块扩展插件 · 需求文档 V1.0</title>
+<style>
+:root{
+  --purple:#7719aa; --purple-dark:#5b1485; --purple-light:#f5eefb;
+  --ink:#24292f; --muted:#57606a; --line:#d8dee4; --bg:#ffffff; --page:#eef1f4;
+  --ok:#1a7f37; --warn:#9a6700; --danger:#cf222e; --info:#0969da;
+  --code-bg:#fbfcfd; --code-head:#eef0f3;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:"Segoe UI","Microsoft YaHei",system-ui,-apple-system,sans-serif;color:var(--ink);background:var(--page);line-height:1.75;font-size:15px}
+.page{max-width:1060px;margin:0 auto;background:var(--bg);box-shadow:0 0 30px rgba(0,0,0,.08);padding-bottom:90px}
+.doc-banner{background:linear-gradient(120deg,#4c1177 0%,#7719aa 55%,#9a4fd0 100%);color:#fff;padding:48px 56px 40px}
+.doc-banner h1{margin:0 0 10px;font-size:30px;letter-spacing:.5px}
+.doc-banner .sub{opacity:.92;font-size:15px;margin-bottom:18px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:2px 14px;font-size:12.5px}
+.wrap{padding:34px 56px 0}
+h2{font-size:22px;margin:52px 0 16px;padding-left:12px;border-left:6px solid var(--purple);color:#1f2328;line-height:1.35}
+h3{font-size:17.5px;margin:32px 0 10px;color:#1f2328}
+h4{font-size:15.5px;margin:24px 0 8px;color:#3c424b}
+p{margin:10px 0}
+a{color:var(--info);text-decoration:none}
+a:hover{text-decoration:underline}
+ul,ol{margin:8px 0;padding-left:26px}
+li{margin:4px 0}
+code{font-family:Consolas,"Cascadia Mono",Menlo,monospace;background:#f0f2f5;border:1px solid #e3e6ea;border-radius:4px;padding:1px 5px;font-size:13px}
+strong{color:#1f2328}
+.toc{background:var(--purple-light);border:1px solid #e5d8f2;border-radius:10px;padding:18px 28px;margin:8px 0 0}
+.toc h3{margin:0 0 10px;color:var(--purple-dark)}
+.toc ol{columns:2;column-gap:44px;margin:0;padding-left:22px;font-size:14px}
+.toc li{margin:3px 0;break-inside:avoid}
+table{border-collapse:collapse;width:100%;margin:14px 0;font-size:13.5px}
+th{background:#f6f8fa;text-align:left;font-weight:600;color:#3c424b}
+th,td{border:1px solid var(--line);padding:7px 11px;vertical-align:top}
+tr:nth-child(even) td{background:#fafbfc}
+.p0{background:#ffebe9;color:#cf222e;border-radius:4px;padding:1px 8px;font-size:12px;font-weight:600;white-space:nowrap}
+.p1{background:#fff8c5;color:#9a6700;border-radius:4px;padding:1px 8px;font-size:12px;font-weight:600;white-space:nowrap}
+.p2{background:#ddf4ff;color:#0969da;border-radius:4px;padding:1px 8px;font-size:12px;font-weight:600;white-space:nowrap}
+.note,.warn,.tip{border-radius:6px;padding:12px 16px;margin:14px 0;font-size:14px}
+.note{border-left:4px solid var(--info);background:#f2f8ff}
+.warn{border-left:4px solid var(--warn);background:#fffbeb}
+.tip{border-left:4px solid var(--ok);background:#f0fff4}
+.note b,.warn b,.tip b{display:block;margin-bottom:4px}
+/* ===== 架构图 ===== */
+.layers{margin:18px 0}
+.layer{border:1px solid #d3b8ea;background:linear-gradient(180deg,#faf6fe,#f3eafb);border-radius:8px;padding:10px 18px;margin:8px 0}
+.layer b{color:var(--purple-dark);font-size:14.5px}
+.layer .desc{color:var(--muted);font-size:13px;margin-left:10px}
+.layer.core{background:linear-gradient(180deg,#eef7f0,#e6f3ea);border-color:#b7dcc3}
+.layer.host{background:linear-gradient(180deg,#fdf3f4,#fbe9eb);border-color:#e7b6bd}
+.pipe{display:flex;align-items:stretch;gap:0;margin:16px 0;flex-wrap:wrap}
+.pstep{flex:1;min-width:130px;border:1px solid #c9b6dd;background:#faf7fd;border-radius:8px;padding:10px 8px;text-align:center;font-size:13px}
+.pstep b{display:block;color:var(--purple-dark);margin-bottom:4px;font-size:13.5px}
+.pstep small{color:var(--muted);font-size:11.5px;line-height:1.5;display:block}
+.parrow{display:flex;align-items:center;padding:0 6px;color:var(--purple);font-size:18px;font-weight:700}
+/* ===== Mockup 通用 ===== */
+.mock{border:1px solid #c9d1d9;border-radius:10px;overflow:hidden;background:#fff;margin:18px 0;box-shadow:0 2px 10px rgba(140,105,180,.08)}
+.mock-cap{background:#f6f8fa;border-bottom:1px solid #e3e6ea;padding:7px 16px;font-size:12.5px;color:var(--muted)}
+.mock-cap b{color:var(--ink)}
+/* Ribbon */
+.rb-tabs{display:flex;gap:4px;padding:6px 12px 0;background:#fafbfc;border-bottom:1px solid #d0d7de;font-size:12.5px}
+.rb-tab{padding:5px 16px;border-radius:7px 7px 0 0;color:var(--muted);border:1px solid transparent;border-bottom:none}
+.rb-tab.on{background:#fff;border-color:#d0d7de;color:var(--purple-dark);font-weight:700;margin-bottom:-1px}
+.rb-body{display:flex;padding:12px 10px 8px;background:#fff;align-items:stretch}
+.rb-g{display:flex;flex-direction:column;align-items:center;padding:0 16px;border-right:1px solid #eceff3}
+.rb-g:last-child{border-right:none}
+.rb-btns{display:flex;gap:14px;align-items:flex-start}
+.rb-btn{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:64px;font-size:12px;color:#3c424b;text-align:center}
+.rb-ico{width:40px;height:40px;border:1px solid #d8dee4;border-radius:7px;background:#fafbfc;display:flex;align-items:center;justify-content:center;font:700 15px Consolas;color:var(--purple)}
+.rb-btn.big .rb-ico{width:56px;height:56px;font-size:19px;background:var(--purple-light);border-color:#d3b8ea}
+.rb-lab{font-size:11.5px;color:var(--muted);margin-top:6px}
+/* 对话框 */
+.dlg-title{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(90deg,#6a16a0,#8b3cc0);color:#fff;padding:9px 16px;font-size:13.5px;font-weight:600}
+.dlg-x{opacity:.8;font-family:Consolas}
+.dlg{display:grid;grid-template-columns:210px 1fr;min-height:520px}
+.dlg-side{border-right:1px solid #e6e9ee;background:#fafbfc;padding:12px 0}
+.dlg-side .srch{margin:0 12px 10px;display:flex;align-items:center;gap:6px;border:1px solid #d0d7de;border-radius:6px;background:#fff;padding:4px 8px;color:var(--muted);font-size:12.5px}
+.dlg-side h5{margin:8px 16px 4px;font-size:11.5px;color:var(--muted);letter-spacing:.5px}
+.lang-item{padding:5px 16px;font-size:13px;color:#3c424b;display:flex;justify-content:space-between}
+.lang-item .dot{color:#c4b1d8}
+.lang-item.on{background:var(--purple-light);color:var(--purple-dark);font-weight:600;border-right:3px solid var(--purple)}
+.lang-item.star::after{content:"★";color:#d4a017;font-size:11px}
+.dlg-main{padding:14px 18px;display:flex;flex-direction:column;gap:10px;font-size:13px}
+.frow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.frow label{color:#3c424b}
+.inp{border:1px solid #c9d1d9;border-radius:6px;padding:4px 10px;background:#fff;font-size:13px;color:var(--ink)}
+.inp.wide{flex:1}
+.sel{border:1px solid #c9d1d9;border-radius:6px;padding:4px 8px;background:#fff;font-size:12.5px}
+.chk{display:inline-flex;align-items:center;gap:5px}
+.box{width:14px;height:14px;border:1.5px solid #8b949e;border-radius:3px;display:inline-block;position:relative;background:#fff}
+.box.on{background:var(--purple);border-color:var(--purple)}
+.box.on::after{content:"✓";color:#fff;font-size:10px;position:absolute;top:-2px;left:2px}
+.opt-panel{border:1px solid #e6e9ee;border-radius:8px;padding:10px 14px;background:#fbfcfd;display:flex;flex-direction:column;gap:8px}
+.ed-mock{border:1px solid #c9d1d9;border-radius:8px;background:#1e1e2e;color:#cdd6f4;font:12.5px/1.65 Consolas;padding:10px 0;overflow:hidden}
+.ed-mock .cl{display:flex}
+.ed-mock .n{width:34px;text-align:right;padding-right:10px;color:#6c7086;user-select:none;flex:none;border-right:1px solid #313244;margin-right:12px}
+.ed-mock .c{white-space:pre;padding-right:12px}
+.dlg-foot{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #e6e9ee;padding-top:10px}
+.btn{border:1px solid #c9d1d9;border-radius:6px;padding:5px 18px;font-size:13px;background:#f6f8fa;color:var(--ink)}
+.btn.pri{background:var(--purple);border-color:var(--purple-dark);color:#fff;font-weight:600;padding:6px 24px}
+.badge{display:inline-block;border-radius:999px;padding:1px 10px;font-size:11px;font-weight:700;letter-spacing:.5px}
+.badge.sql{background:#e8f0fe;color:#1a73e8}
+.badge.plsql{background:#fdeee0;color:#c2410c}
+.badge.js{background:#fdf6e3;color:#b45309}
+.badge.tsx{background:#e0f2fe;color:#0369a1}
+.badge.java{background:#fdf0f5;color:#be185d}
+.badge.html{background:#fee2e2;color:#b91c1c}
+.badge.css{background:#ede9fe;color:#6d28d9}
+/* ===== 插入后代码块预览 ===== */
+.cb{border:1px solid #d0d7de;border-radius:8px;overflow:hidden;margin:14px 0;box-shadow:0 1px 6px rgba(0,0,0,.05)}
+.cb-head{display:flex;align-items:center;gap:10px;background:var(--code-head);border-bottom:1px solid #e3e6ea;padding:6px 14px;font:600 12.5px Consolas;color:#3c424b}
+.cb-head .ttl{flex:1}
+.cb-head .menu{color:#8b949e;letter-spacing:2px;font-weight:700}
+.cb-body{font:12.5px/1.7 Consolas,"Cascadia Mono",monospace;background:var(--code-bg);padding:8px 0}
+.cl{display:flex}
+.cl .n{width:44px;flex:none;text-align:right;padding:0 10px 0 0;color:#8b949e;border-right:1px solid #e5e7eb;user-select:none;background:#f3f4f6;font-size:11.5px;line-height:1.84}
+.cl .c{white-space:pre-wrap;padding:0 14px;flex:1}
+.tk-kw{color:#0000ff}.tk-ctl{color:#af00db}.tk-str{color:#a31515}.tk-com{color:#008000}.tk-num{color:#098658}
+.tk-fn{color:#795e26}.tk-type{color:#267f99}.tk-var{color:#001080}.tk-tag{color:#800000}.tk-attr{color:#e50000}
+.tk-op{color:#24292f}.tk-bind{color:#8250df}.tk-pkg{color:#267f99;font-weight:600}
+pre.snip{background:#f6f8fa;border:1px solid #e3e6ea;border-radius:8px;padding:12px 16px;font:12.5px/1.7 Consolas,monospace;overflow:auto;margin:12px 0}
+/* 设置中心 */
+.set{display:grid;grid-template-columns:190px 1fr;min-height:380px;font-size:13px}
+.set-nav{border-right:1px solid #e6e9ee;background:#fafbfc;padding:10px 0}
+.set-nav div{padding:7px 20px;color:#3c424b}
+.set-nav div.on{background:var(--purple-light);color:var(--purple-dark);font-weight:600;border-right:3px solid var(--purple)}
+.set-body{padding:16px 22px}
+.set-row{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px dashed #eceff3}
+.set-row .lbl{width:170px;color:#3c424b}
+/* 上下文菜单 */
+.ctx{width:230px;border:1px solid #d0d7de;border-radius:8px;background:#fff;box-shadow:0 6px 20px rgba(0,0,0,.12);font-size:13px;padding:5px 0;margin:16px auto}
+.ctx div{padding:7px 16px;display:flex;justify-content:space-between;color:#3c424b}
+.ctx div:hover{background:var(--purple-light)}
+.ctx .k{color:var(--muted);font-size:12px}
+.ctx hr{border:none;border-top:1px solid #eceff3;margin:5px 0}
+/* 目录树 */
+.tree{background:#f6f8fa;border:1px solid #e3e6ea;border-radius:8px;padding:12px 18px;font:12.5px/1.8 Consolas,monospace;white-space:pre;overflow:auto;margin:12px 0}
+.foot{margin-top:70px;padding:22px 56px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px;text-align:center}
+@media print{body{background:#fff}.page{box-shadow:none}.toc a{color:inherit}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="doc-banner">
+  <h1>OneExtend — OneNote 代码块扩展插件</h1>
+  <div class="sub">完整需求文档（含技术选型、系统架构与界面 UI 设计稿）</div>
+  <div class="chips">
+    <span class="chip">版本 V1.0（草案，待评审）</span>
+    <span class="chip">日期 2026-09-26</span>
+    <span class="chip">工程目录 12_OnenoteExtend</span>
+    <span class="chip">目标平台 Windows · OneNote 桌面版</span>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- ================= 目录 ================= -->
+<div class="toc">
+  <h3>目录</h3>
+  <ol>
+    <li><a href="#s1">项目概述</a></li>
+    <li><a href="#s2">需求分析</a></li>
+    <li><a href="#s3">技术选型与决策</a></li>
+    <li><a href="#s4">总体架构设计</a></li>
+    <li><a href="#s5">界面设计（UI）</a></li>
+    <li><a href="#s6">数据结构定义</a></li>
+    <li><a href="#s7">里程碑计划</a></li>
+    <li><a href="#s8">风险与对策</a></li>
+    <li><a href="#s9">附录</a></li>
+  </ol>
+</div>
+
+<!-- ================= 1 概述 ================= -->
+<h2 id="s1">1. 项目概述</h2>
+
+<h3>1.1 背景与痛点</h3>
+<p>OneNote 是广泛使用的笔记工具，但对开发人员极不友好：原生没有语法高亮、没有行号、粘贴代码时字体混杂、缩进混乱、无法为代码块命名归档。开发者通常被迫截图代码或使用外部工具粘贴图片，导致代码<b>不可编辑、不可搜索、不可复制</b>。市面上的补齐方案（如 OneMore 的部分功能）或不够专注、或对 SQL / PL·SQL 这类企业开发常用语言支持薄弱。</p>
+
+<h3>1.2 产品定位</h3>
+<p><b>OneExtend</b> 是一个面向 <b>Windows OneNote 桌面版</b>的原生扩展插件（COM Add-in）。首个功能域为「代码块」——让 OneNote 拥有接近专业 Markdown 编辑器的代码呈现能力；同时在架构上将其设计为<b>多功能域扩展平台</b>，后续可平滑叠加与代码块无关的新功能。</p>
+
+<h3>1.3 目标用户</h3>
+<ul>
+  <li>使用 OneNote 记录开发笔记、方案设计、排查手册的软件工程师；</li>
+  <li>Oracle / 数据库方向的 DBA 与后端开发人员（重度 SQL、PL·SQL 用户）；</li>
+  <li>前端 / 全栈开发人员（HTML、CSS、JavaScript/Node.js、React）；</li>
+  <li>Java 服务端开发人员。</li>
+</ul>
+
+<h3>1.4 项目目标</h3>
+<table>
+  <tr><th style="width:90px">编号</th><th>目标</th></tr>
+  <tr><td>G1</td><td>在 OneNote 中一键插入<b>带语法高亮、等宽字体、可配置行号、自定义名称</b>的代码块，效果所见即所得。</td></tr>
+  <tr><td>G2</td><td>插入时可<b>自动美化代码缩进</b>；对 SQL / PL·SQL 提供企业级深度美化与高亮支持。</td></tr>
+  <tr><td>G3</td><td>已插入的代码块可<b>重新编辑、重新格式化、复制为纯文本</b>（双向可逆）。</td></tr>
+  <tr><td>G4</td><td>架构面向扩展：新功能 = 新模块；新语言 = 新语法包（数据文件，零代码改动）。</td></tr>
+  <tr><td>G5</td><td>产品级工程质量：安装卸载干净、崩溃隔离、双语文界面（zh-CN / en-US）。</td></tr>
+</table>
+
+<h3>1.5 非目标（Non-Goals）</h3>
+<ul>
+  <li>不做代码<b>执行</b>、调试、IntelliSense —— 插件只负责「呈现与美化」，不是 IDE。</li>
+  <li>不支持 OneNote 网页版 / macOS / 移动端 <b>插件本体</b>的运行（插入的代码块本身在所有端正常显示，因为它是原生 OneNote 内容）。</li>
+  <li>不做 OneNote 同步、笔记本管理类功能（避免与产品自身能力冲突）。</li>
+  <li>不做联网服务：所有处理本地完成，不上传任何用户数据。</li>
+</ul>
+
+<div class="note"><b>关键结论（先读）</b>
+经调研（2026-09）：Microsoft 的 Office.js 网页插件体系至今<b>仅支持 OneNote 网页版</b>，不支持 OneNote 桌面版；OneNote for Windows 10（UWP）已被微软退役，统一到桌面版。因此桌面端唯一成熟的官方扩展机制是 <b>COM Add-in（.NET）+ OneNote Interop API</b>（开源项目 OneMore 已验证该路线可行且活跃维护）。本项目选定该路线，详见第 3 章。</div>
+
+<!-- ================= 2 需求分析 ================= -->
+<h2 id="s2">2. 需求分析</h2>
+
+<h3>2.1 用户故事</h3>
+<table>
+  <tr><th style="width:80px">编号</th><th>用户故事</th></tr>
+  <tr><td>US-01</td><td>作为后端开发，我在排查 Oracle 问题时想把一段 PL·SQL 存进笔记，希望它<b>关键字有颜色、结构缩进清晰、带行号</b>，以后能直接复制回 PL/SQL Developer 使用。</td></tr>
+  <tr><td>US-02</td><td>作为前端开发，我把组件代码贴进 OneNote 后总是格式错乱，希望贴入时<b>自动保持等宽字体与缩进</b>，并标注「OrderCard.tsx」这样的块名称。</td></tr>
+  <tr><td>US-03</td><td>作为团队知识库维护者，我记录的 SQL 希望<b>按团队规范自动美化</b>（关键字大写、子句换行、AND 对齐），保持所有笔记风格统一。</td></tr>
+  <tr><td>US-04</td><td>作为全栈工程师，我希望插入的代码块<b>日后还能改</b>：双击或右键即可重新编辑源码并更新高亮，而不是变成只能看的"死"内容。</td></tr>
+</table>
+
+<h3>2.2 功能需求（FR）</h3>
+<p>优先级定义：<span class="p0">P0 首版必须</span>　<span class="p1">P1 首版应该</span>　<span class="p2">P2 后续版本</span></p>
+
+<h4>FR-100 插入代码块（核心）</h4>
+<table>
+  <tr><th style="width:90px">编号</th><th style="width:60px">优先级</th><th>需求描述</th></tr>
+  <tr><td>FR-101</td><td><span class="p0">P0</span></td><td>提供「插入代码块」命令入口：OneExtend 功能区（Ribbon）选项卡按钮 + 全局快捷键（默认 <code>Ctrl+Alt+C</code>，可配置）+ 页面右键菜单。</td></tr>
+  <tr><td>FR-102</td><td><span class="p0">P0</span></td><td>语言选择：对话框内提供语言列表（搜索 + 最近使用置顶）；对无语言指定的代码提供<b>自动检测</b>（基于关键字/结构启发式评分）。</td></tr>
+  <tr><td>FR-103</td><td><span class="p0">P0</span></td><td>代码输入区：多行等宽编辑器，支持大段粘贴、Tab/Shift+Tab 缩进、行号显示、撤销重做。</td></tr>
+  <tr><td>FR-104</td><td><span class="p0">P0</span></td><td>实时预览：输入区下方展示与插入后完全一致的效果（高亮、行号、底纹、标题）。</td></tr>
+  <tr><td>FR-105</td><td><span class="p0">P0</span></td><td>等宽渲染：代码文本统一等宽字体，默认 <code>Consolas</code>，可选 Cascadia Mono / JetBrains Mono / 系统等宽字体列表；字号 8–24 可调。</td></tr>
+  <tr><td>FR-106</td><td><span class="p0">P0</span></td><td>插入位置：当前页面光标处；无光标时插入页面末尾并定位。</td></tr>
+  <tr><td>FR-107</td><td><span class="p1">P1</span></td><td>剪贴板联动：打开对话框时若剪贴板为文本则自动填入并尝试识别语言。</td></tr>
+</table>
+
+<h4>FR-200 行号</h4>
+<table>
+  <tr><th style="width:90px">编号</th><th style="width:60px">优先级</th><th>需求描述</th></tr>
+  <tr><td>FR-201</td><td><span class="p0">P0</span></td><td>行号开关（显示 / 隐藏），默认显示。</td></tr>
+  <tr><td>FR-202</td><td><span class="p0">P0</span></td><td>自定义起始行号（默认 1）与步长（默认 1）——满足"片段接续编号"场景。</td></tr>
+  <tr><td>FR-203</td><td><span class="p1">P1</span></td><td>行号样式：颜色（默认灰）、位数补齐（自动 / 固定 2/3/4 位）、分隔符（无 / 竖线 / 点）。</td></tr>
+  <tr><td>FR-204</td><td><span class="p1">P1</span></td><td>渲染模式二选一：<b>双列对齐</b>（行号独立成列，视觉最佳，默认）与<b>内联前缀</b>（行号作为文本前缀，永不因换行错位）。检测到超长行时自动建议切换内联模式。</td></tr>
+</table>
+
+<h4>FR-300 自动美化（格式化）</h4>
+<table>
+  <tr><th style="width:90px">编号</th><th style="width:60px">优先级</th><th>需求描述</th></tr>
+  <tr><td>FR-301</td><td><span class="p0">P0</span></td><td>插入时可启用自动美化：修正缩进层级、统一空格/Tab（可配置缩进宽度 2/4/8）。</td></tr>
+  <tr><td>FR-302</td><td><span class="p0">P0</span></td><td>格式化策略按语言插件化；预览区实时展示美化结果；可一键在「原始 / 美化后」间切换对比。</td></tr>
+  <tr><td>FR-303</td><td><span class="p0">P0</span></td><td>SQL/PL·SQL 美化规则集（详见 FR-900）。</td></tr>
+  <tr><td>FR-304</td><td><span class="p0">P0</span></td><td>结构化语言（HTML/CSS/JS/TS/TSX/Java）通用美化：基于括号/标签深度 re-indent，保留空行与行内注释相对位置。</td></tr>
+  <tr><td>FR-305</td><td><span class="p2">P2</span></td><td>美化风格模板（团队规范导出为 JSON，导入共享）。</td></tr>
+</table>
+
+<h4>FR-400 代码块命名</h4>
+<table>
+  <tr><th style="width:90px">编号</th><th style="width:60px">优先级</th><th>需求描述</th></tr>
+  <tr><td>FR-401</td><td><span class="p0">P0</span></td><td>自定义代码块标题（如 <code>get_orders.sql</code>、<code>OrderCard.tsx</code>）；为空时按策略自动生成（语言名 + 序号，或从首行注释推断文件名）。</td></tr>
+  <tr><td>FR-402</td><td><span class="p0">P0</span></td><td>标题栏显示语言徽标（SQL / PL·SQL / JS / TSX / Java / HTML / CSS），标题与徽标渲染为代码块头行。</td></tr>
+  <tr><td>FR-403</td><td><span class="p1">P1</span></td><td>标题插入后可直接在 OneNote 中编辑（它是普通文本，不锁定）。</td></tr>
+</table>
+
+<h4>FR-500 语法高亮</h4>
+<table>
+  <tr><th style="width:90px">编号</th><th style="width:60px">优先级</th><th>需求描述</th></tr>
+  <tr><td>FR-501</td><td><span class="p0">P0</span></td><td>内置语言：<b>HTML、CSS、JavaScript（Node.js）、TypeScript、JSX/TSX（React）、Java、SQL、PL/SQL</b>。其中 SQL 与 PL/SQL 为一级重点（见 FR-900）。</td></tr>
+  <tr><td>FR-502</td><td><span class="p0">P0</span></td><td>主题系统：浅色（默认）、深色、高对比；token 类别：关键字 / 控制关键字 / 字符串 / 数字 / 注释 / 函数 / 类型 / 标签 / 属性 / 变量 / 操作符 / 绑定变量。</td></tr>
+  <tr><td>FR-503</td><td><span class="p1">P1</span></td><td>自定义配色：用户可在设置中逐 token 类别调整颜色，导出/导入主题。</td></tr>
+  <tr><td>FR-504</td><td><span class="p1">P1</span></td><td>超长行处理：OneNote 自动软换行时续行悬挂缩进对齐（尽力而为），或提示切换内联行号模式。</td></tr>
+  <tr><td>FR-505</td><td><span class="p1">P1</span></td><td><b>语法包扩展机制</b>：语言定义为声明式 JSON 数据（token 规则 + 关键字表），新增语言无需改代码，可在设置中心导入第三方语法包。</td></tr>
+</table>
+
+<h4>FR-600 编辑与回读（双向可逆）</h4>
+<table>
+  <tr><th style="width:90px">编号</th><th style="width:60px">优先级</th><th>需求描述</th></tr>
+  <tr><td>FR-601</td><td><span class="p0">P0</span></td><td>插入时在页面 XML 写入 <code>one:Meta</code> 元数据（语言、插件版本、行号配置、源码哈希），作为块身份标识。</td></tr>
+  <tr><td>FR-602</td><td><span class="p0">P0</span></td><td>「编辑代码块」：识别光标所在块，还原为纯源码载入对话框（剥离行号/高亮/转义），保存后原位重建整块。</td></tr>
+  <tr><td>FR-603</td><td><span class="p0">P0</span></td><td>「复制为纯文本」：右键菜单一键复制块内源码（用于粘贴回 IDE）。</td></tr>
+  <tr><td>FR-604</td><td><span class="p1">P1</span></td><td>「重新格式化 / 切换语言 / 切换主题」：对已有块重跑渲染管线，原位刷新。</td></tr>
+</table>
+
+<h4>FR-700 系统集成</h4>
+<table>
+  <tr><th style="width:90px">编号</th><th style="width:60px">优先级</th><th>需求描述</th></tr>
+  <tr><td>FR-701</td><td><span class="p0">P0</span></td><td>OneNote 功能区新增「OneExtend」选项卡（借鉴 OneMore 的成熟注入方式；M0 阶段技术验证，失败则回退方案：快捷键 + 右键菜单 + 浮动工具条）。</td></tr>
+  <tr><td>FR-702</td><td><span class="p0">P0</span></td><td>可配置快捷键（默认 <code>Ctrl+Alt+C</code> 插入、<code>Ctrl+Alt+E</code> 编辑块）。</td></tr>
+  <tr><td>FR-703</td><td><span class="p0">P0</span></td><td>上下文菜单（对代码块）：编辑、复制纯文本、重格式化、切换行号、切换主题。</td></tr>
+  <tr><td>FR-704</td><td><span class="p1">P1</span></td><td>命令面板（<code>Ctrl+Alt+Shift+P</code>）：可搜索执行全部已注册命令 —— 为未来功能域提供统一、与 Ribbon 解耦的入口。</td></tr>
+  <tr><td>FR-705</td><td><span class="p1">P1</span></td><td>加载失败自愈：异常时提示并可选择禁用/重启加载，绝不拖垮 OneNote 主程序。</td></tr>
+</table>
+
+<h4>FR-800 设置</h4>
+<table>
+  <tr><th style="width:90px">编号</th><th style="width:60px">优先级</th><th>需求描述</th></tr>
+  <tr><td>FR-801</td><td><span class="p0">P0</span></td><td>设置中心：通用 / 外观（主题·字体）/ 语言与语法包 / 格式化 / 快捷键 / 关于；全部设置持久化为 JSON。</td></tr>
+  <tr><td>FR-802</td><td><span class="p1">P1</span></td><td>配置导入导出（团队规范共享）。</td></tr>
+  <tr><td>FR-803</td><td><span class="p1">P1</span></td><td>语法包管理界面：启用/禁用/导入/查看版本；第三方包导入时校验结构并提示来源。</td></tr>
+  <tr><td>FR-804</td><td><span class="p2">P2</span></td><td>多语言界面：zh-CN（默认）、en-US。</td></tr>
+</table>
+
+<h4>FR-900 PL/SQL 与 SQL 增强支持（一级重点）</h4>
+<table>
+  <tr><th style="width:90px">编号</th><th style="width:60px">优先级</th><th>需求描述</th></tr>
+  <tr><td>FR-901</td><td><span class="p0">P0</span></td><td>Oracle PL/SQL 完整词法：全部关键字、内置包（<code>DBMS_*</code>、<code>UTL_*</code>、<code>APEX_*</code>）、常用内置函数与数据类型识别。</td></tr>
+  <tr><td>FR-902</td><td><span class="p0">P0</span></td><td>Oracle 特有 token：绑定变量 <code>:name</code>、替换变量 <code>&amp;name.</code>、<code>q'[... ]'</code> 备择字符串、标量子查询等正确着色。</td></tr>
+  <tr><td>FR-903</td><td><span class="p0">P0</span></td><td>PL/SQL 块结构美化：<code>DECLARE / BEGIN / EXCEPTION / END</code> 逐级缩进、<code>IS|AS</code> 体对齐、<code>IF/ELSIF</code>、<code>LOOP</code>、<code>CASE</code> 嵌套缩进、异常分支 <code>WHEN ... THEN</code> 对齐。</td></tr>
+  <tr><td>FR-904</td><td><span class="p0">P0</span></td><td>SQL 美化：<code>SELECT/FROM/WHERE/GROUP BY/ORDER BY</code> 等子句独立成行、<code>JOIN ... ON</code> 对齐、<code>AND/OR</code> 缩进对齐、<code>IN (...)</code> 列表换行选项、逗号前置/后置选项。</td></tr>
+  <tr><td>FR-905</td><td><span class="p0">P0</span></td><td>SQL 关键字大小写选项：保持 / 全大写 / 全小写 / 首字母大写（默认大写）。</td></tr>
+  <tr><td>FR-906</td><td><span class="p0">P0</span></td><td>结构化片段缩进：CTE（<code>WITH ... AS</code>）、<code>CASE WHEN</code>、窗口函数 <code>OVER (PARTITION BY ...)</code>、子查询嵌套对齐。</td></tr>
+  <tr><td>FR-907</td><td><span class="p1">P1</span></td><td>SQL 方言关键字包：ANSI（基础）、Oracle、T-SQL、MySQL —— 方言间差异词互不干扰。</td></tr>
+  <tr><td>FR-908</td><td><span class="p1">P1</span></td><td>注释风格保留：<code>--</code> 行注释、<code>/* */</code> 块注释、SQL*Plus 提示指令（<code>SET</code>、<code>EXEC</code>、<code>PROMPT</code>）独立着色。</td></tr>
+</table>
+
+<h3>2.3 非功能需求（NFR）</h3>
+<table>
+  <tr><th style="width:100px">编号</th><th style="width:130px">类别</th><th>要求</th></tr>
+  <tr><td>NFR-001</td><td>性能</td><td>500 行代码高亮 + 插入 ≤ 1s；1000 行 ≤ 2s；对话框冷启动 ≤ 300ms；预览刷新（防抖 200ms）≤ 100ms。</td></tr>
+  <tr><td>NFR-002</td><td>兼容性</td><td>OneNote 桌面版（Microsoft 365 订阅版 / 2016 / 2019 / 2021 / LTSC 2024），x86 与 x64；Windows 10 1809+ / Windows 11；高 DPI（PerMonitorV2）。</td></tr>
+  <tr><td>NFR-003</td><td>可靠性</td><td>所有命令入口全局异常捕获并记录日志；插件异常不影响 OneNote 稳定；连续崩溃自动建议禁用。</td></tr>
+  <tr><td>NFR-004</td><td>安全</td><td>纯本地处理、零网络行为；第三方语法包导入做结构校验与来源提示。</td></tr>
+  <tr><td>NFR-005</td><td>可维护性</td><td>核心逻辑（Tokenizer / Formatter / XML Builder）与 OneNote Interop 完全解耦，单元测试覆盖率 ≥ 80%。</td></tr>
+  <tr><td>NFR-006</td><td>可扩展性</td><td>新增功能域不改核心代码（模块注册制）；新增语言零代码（语法包数据制）。</td></tr>
+  <tr><td>NFR-007</td><td>可卸载</td><td>MSI 安装/卸载干净：注册表项、<code>%AppData%</code> 目录、COM 注册全部清理。</td></tr>
+  <tr><td>NFR-008</td><td>无障碍</td><td>全部对话框可纯键盘操作；高对比度主题支持。</td></tr>
+</table>
+
+<h3>2.4 验收标准（摘要）</h3>
+<ul>
+  <li>在一台全新 Windows 11 + Microsoft 365 OneNote 环境安装后，30 秒内完成首次「插入 PL·SQL 代码块（含行号、标题、美化）」全流程；</li>
+  <li>插入的块在 OneNote iOS / Android / 网页版打开<b>显示正常</b>（原生内容，无需插件）；</li>
+  <li>对插入 7 天后的块执行「编辑代码块」，还原源码与原稿逐字符一致（自动化对比测试）；</li>
+  <li>1000 行 SQL 插入 ≤ 2s，期间 OneNote UI 不冻结（后台线程 + 进度提示）；</li>
+  <li>新增一门示例语言（如 Go）只需新增一个语法包 JSON 文件，全程无代码改动（扩展性验收演示）。</li>
+</ul>
+
+<!-- ================= 3 技术选型 ================= -->
+<h2 id="s3">3. 技术选型与决策</h2>
+
+<h3>3.1 OneNote 扩展途径对比（2026-09 现状）</h3>
+<table>
+  <tr><th style="width:150px">途径</th><th>桌面版集成</th><th>页面内容控制力</th><th>结论</th></tr>
+  <tr>
+    <td><b>A. COM Add-in</b><br>C# + OneNote Interop</td>
+    <td>★★★★★ Ribbon / 快捷键 / 右键菜单 / 进程内</td>
+    <td>★★★★★ 直接读写页面 XML：表格、单元格底纹、彩色文本 run、Meta 元数据全部可用</td>
+    <td><b>✅ 选定</b>。OneMore 项目多年验证，唯一能满足全部 FR 的路线</td>
+  </tr>
+  <tr>
+    <td><b>B. Office.js Web Add-in</b></td>
+    <td>★☆☆☆☆ <b>仅 OneNote 网页版</b>，桌面版至今不支持（已确认）</td>
+    <td>★★★☆☆ 可插入 HTML 转换内容，但无法读取/更新既有内容，无行号表格级控制</td>
+    <td>❌ 不满足目标平台；仅作为未来"网页版伴侣"储备</td>
+  </tr>
+  <tr>
+    <td><b>C. 独立工具 + 剪贴板</b></td>
+    <td>★★☆☆☆ 进程外，无 Ribbon/快捷键集成</td>
+    <td>★★☆☆☆ 只能粘贴 HTML/RTF，无法回读编辑（FR-600 不可实现）</td>
+    <td>❌ 仅作 M0 阶段的概念验证手段</td>
+  </tr>
+  <tr>
+    <td><b>D. Onetastic 宏</b></td>
+    <td>★★★★☆</td>
+    <td>★★★☆☆ 受宏语言能力限制，复杂 UI（对话框、预览、语法包管理）难实现</td>
+    <td>❌ 受制于第三方运行时的生命周期</td>
+  </tr>
+</table>
+
+<h3>3.2 语言、框架与运行时决策</h3>
+<table>
+  <tr><th style="width:170px">决策项</th><th>决定</th><th>理由</th></tr>
+  <tr><td>开发语言</td><td><b>C#</b></td><td>OneNote Interop（COM）唯一的一等公民生态；OneMore / Gem 等先例均为 .NET；类型安全利于长期维护。</td></tr>
+  <tr><td>插件宿主运行时</td><td><b>.NET Framework 4.8</b>（仅宿主层）</td><td>OneNote 桌面版 COM 加载器加载经典 .NET Framework 程序集；4.8 内置于 Win10 1809+/Win11，无额外部署。</td></tr>
+  <tr><td>核心库运行时</td><td><b>.NET Standard 2.0</b></td><td>渲染核心与 OneNote <b>零耦合</b>：未来若迁移 .NET 8+ 或复用到 Office.js 网页版（Blazor/TS 移植参考），核心代码原样可用。</td></tr>
+  <tr><td>UI 框架</td><td><b>WPF</b></td><td>Windows 桌面原生、高 DPI 完善、样式模板能力强（主题、双语、无障碍）；与 .NET Framework 宿主无缝。</td></tr>
+  <tr><td>COM 注册</td><td>Registry（HKCU）+ MSIL AnyCPU 单 DLL</td><td>免 VSTO Runtime 依赖，安装轻量；x86/x64 通吃。</td></tr>
+  <tr><td>高亮引擎</td><td><b>自研轻量 Tokenizer + 声明式语法包</b></td><td>现成库（如 ColorCode）语言覆盖与 Oracle 方言能力不足；自研 = JSON 语法包机制（FR-505）的前提，且可控可测。</td></tr>
+  <tr><td>格式化引擎</td><td><b>每语言 Formatter 插件</b>（SQL/PL·SQL 自研规则引擎，其余括号深度 re-indent）</td><td>SQL 美化是本产品差异点，值得专门实现；接口统一，第三方可扩展。</td></tr>
+  <tr><td>安装分发</td><td><b>WiX Toolset 生成 MSI</b>，可选代码签名</td><td>企业可批量部署；卸载干净（NFR-007）。</td></tr>
+  <tr><td>开源参考</td><td>OneMore（架构思路参考，独立实现）</td><td>验证 Interop/Ribbon/页面 XML 可行性；借鉴思想、不复制代码，规避许可证风险。</td></tr>
+</table>
+
+<div class="tip"><b>为什么不用 Office.js（即使未来微软支持桌面版）？</b>
+Office.js 的 OneNote API 面向"追加内容"，缺少对既有页面结构的精细读写能力（行号表格、Meta 回读、原位更新），且 UI 被限制在任务窗格。本项目把「渲染核心」放在 .NET Standard 2.0 纯库中，就是为这条迁移路径留好了门：届时只需替换集成层与 UI 层。</div>
+
+<!-- ================= 4 架构 ================= -->
+<h2 id="s4">4. 总体架构设计</h2>
+
+<h3>4.1 分层架构</h3>
+<div class="layers">
+  <div class="layer host"><b>⑦ 宿主层 OneExtend.Addin（net48）</b><span class="desc">COM 入口（IDTExtensibility2）· Ribbon 注入 · 快捷钩子 · OneNote 进程内生命周期</span></div>
+  <div class="layer"><b>⑥ UI 层（WPF）</b><span class="desc">插入/编辑对话框 · 设置中心 · 命令面板 · 上下文菜单 · 主题与双语资源</span></div>
+  <div class="layer core"><b>⑤ 命令与模块层 OneExtend.Core（netstandard2.0）</b><span class="desc">CommandRegistry · ModuleManifest · 事件总线（EventBus）· 命令面板数据源 —— <b>扩展性的核心</b></span></div>
+  <div class="layer core"><b>④ 功能域模块</b><span class="desc">CodeBlock 模块（首期）｜预留：Diagram、Formula、SnippetLibrary…（互不依赖，可独立启停）</span></div>
+  <div class="layer"><b>③ 渲染引擎（CodeBlock 模块内）</b><span class="desc">Formatter 管线 → Tokenizer → 主题映射 → OneNote XML Builder（纯函数、可单测）</span></div>
+  <div class="layer"><b>② OneNote 集成层 OneExtend.OneNote</b><span class="desc">Interop 封装：页面 XML 读写 · 选区定位 · 对象 ID · 结构映射（块 ↔ XML）—— 全项目唯一允许触碰 COM 的位置</span></div>
+  <div class="layer"><b>① 基础设施 Infrastructure</b><span class="desc">设置仓库（JSON）· 日志 · 本地化 · 语法包加载器 · 版本/更新检查</span></div>
+</div>
+<div class="note"><b>依赖规则</b>：箭头自上而下单向依赖；③ 渲染引擎与 ⑤⑥⑦ 完全解耦（输入字符串、输出字符串），因此可被任何 UI 复用（预览控件用 WPF 富文本渲染同一份 token 流，保证预览 = 最终效果）。</div>
+
+<h3>4.2 模块化与扩展机制（回应"后续扩展无关功能"）</h3>
+<ul>
+  <li><b>命令注册制</b>：每个功能是一个实现 <code>ICommand</code> 的类，携带元数据（ID、名称、图标、快捷键、Ribbon 分组、是否出现在命令面板）。Ribbon、快捷键、右键菜单、命令面板全部由注册表<b>自动生成</b> —— 新功能只注册，不改造入口。</li>
+  <li><b>模块清单</b>：<code>ModuleManifest</code> 声明模块 ID、版本、依赖、默认启停；设置中心可逐模块启停，禁用模块不加载任何代码。</li>
+  <li><b>事件总线</b>：OneNote 侧事件（页面切换、选区变化、页内容更新）通过 <code>EventBus</code> 广播，模块按需订阅，避免轮询与相互调用。</li>
+  <li><b>资源扩展</b>：语言 = 语法包 JSON；主题 = 主题 JSON；格式化风格 = 风格 JSON。三者均为数据文件，支持用户导入。</li>
+  <li><b>示例推演</b>：未来加「Mermaid 图表渲染」= 新建 Diagram 模块（命令 + 对话框 + 渲染器插件），Core 与既有模块零改动。</li>
+</ul>
+
+<h3>4.3 代码块渲染管线</h3>
+<div class="pipe">
+  <div class="pstep"><b>源码输入</b><small>对话框 / 剪贴板 / 块回读</small></div>
+  <div class="parrow">→</div>
+  <div class="pstep"><b>Formatter</b><small>按语言美化缩进 / SQL 规则集<br>（可旁路：保留原文）</small></div>
+  <div class="parrow">→</div>
+  <div class="pstep"><b>Tokenizer</b><small>语法包驱动<br>产出 token 流（类别+范围）</small></div>
+  <div class="parrow">→</div>
+  <div class="pstep"><b>主题映射</b><small>token 类别 → 颜色/字体</small></div>
+  <div class="parrow">→</div>
+  <div class="pstep"><b>行号组装</b><small>双列 / 内联模式</small></div>
+  <div class="parrow">→</div>
+  <div class="pstep"><b>XML Builder</b><small>生成 one:XML 片段<br>（表格+底纹+彩色 run+Meta）</small></div>
+  <div class="parrow">→</div>
+  <div class="pstep"><b>页面写入</b><small>Interop 更新当前页<br>后台线程+进度</small></div>
+</div>
+
+<h3>4.4 页面结构映射（插入块在 OneNote XML 中的形态）</h3>
+<pre class="snip">&lt;one:OE&gt;
+  &lt;one:Meta name="OneExtend:CodeBlock"
+           content="lang=plsql;v=1;ln=start:1,step:1,mode:col;fmt=on;hash=3f9a2c"/&gt;   ← 块身份（FR-601）
+  &lt;one:OE&gt;&lt;one:T&gt;┌ get_orders.sql · PL/SQL ────────────&lt;/one:T&gt;&lt;/one:OE&gt;          ← 标题行（普通文本，可手改）
+  &lt;one:Table bordersVisible="false"&gt;
+    &lt;one:Columns&gt;&lt;one:Column width="34"/&gt;&lt;one:Column width="620"/&gt;&lt;/one:Columns&gt;
+    &lt;one:Row&gt;&lt;one:Cell shadingColor="#F3F4F6"&gt;   ← 行号列（灰底、右对齐、锁定等宽）
+      &lt;one:OEChildren&gt;
+        &lt;one:OE&gt;&lt;one:T&gt;1&lt;/one:T&gt;&lt;/one:OE&gt; … 每行一个段落
+      &lt;/one:OEChildren&gt;
+    &lt;/one:Cell&gt;
+    &lt;one:Cell shadingColor="#FBFCFD"&gt;              ← 代码列（Consolas + 彩色 run）
+      &lt;one:OEChildren&gt;
+        &lt;one:OE&gt;&lt;one:T&gt;&lt;one:r style="color:#008000"&gt;-- 查询近30天订单&lt;/one:r&gt;&lt;/one:T&gt;&lt;/one:OE&gt;
+        &lt;one:OE&gt;&lt;one:T&gt;&lt;one:r style="color:#0000FF"&gt;SELECT&lt;/one:r&gt; o.order_id, …&lt;/one:T&gt;&lt;/one:OE&gt;
+      &lt;/one:OEChildren&gt;
+    &lt;/one:Cell&gt;&lt;/one:Row&gt;
+  &lt;/one:Table&gt;
+&lt;/one:OE&gt;</pre>
+<div class="warn"><b>设计取舍：行号对齐</b>
+OneNote 无横向滚动、长行必然软换行，双列模式下折行会使行号与内容错位。对策：① 检测超长行（&gt; 阈值）时提示切换"内联前缀"模式（FR-204）；② 代码列段落保持同一字号行高，正常代码行（≤100 列）下双列完全对齐。标题行刻意用普通文本而非表格行，保证用户可自由编辑（FR-403）。</div>
+
+<h3>4.5 工程目录结构规划</h3>
+<div class="tree">12_OnenoteExtend/
+├─ docs/                          # 本需求文档、设计文档、发布说明
+├─ grammars/                      # 语法包（数据，随安装分发）
+│  ├─ sql-ansi.grammar.json
+│  ├─ sql-oracle.grammar.json     # PL/SQL 深度词法
+│  ├─ sql-tsql.grammar.json   sql-mysql.grammar.json
+│  ├─ javascript.grammar.json  typescript.grammar.json  tsx.grammar.json
+│  ├─ html.grammar.json  css.grammar.json  java.grammar.json
+│  └─ schemas/grammar.schema.json # 语法包 JSON Schema（校验+编辑提示）
+├─ themes/                        # 主题 JSON（light / dark / high-contrast）
+├─ src/
+│  ├─ OneExtend.Addin/            # ⑦ 宿主（net48）：COM 入口、Ribbon、热键
+│  ├─ OneExtend.Core/             # ⑤ 命令注册、模块清单、事件总线（netstandard2.0）
+│  ├─ OneExtend.CodeBlock/        # ④ 代码块功能域
+│  │  ├─ Rendering/               # ③ Tokenizer / Formatters / Themes / XmlBuilder
+│  │  └─ UI/                      # 插入/编辑对话框、预览控件（WPF）
+│  ├─ OneExtend.OneNote/          # ② Interop 封装（唯一 COM 触点）
+│  ├─ OneExtend.Infrastructure/   # ① 设置/日志/本地化/语法包加载
+│  └─ OneExtend.Tests/            # 单元测试（Tokenizer/Formatter/XmlBuilder/回读一致性）
+├─ installer/                     # WiX MSI 工程
+└─ README.md</div>
+
+<h3>4.6 未来扩展场景与架构承接方式</h3>
+<table>
+  <tr><th style="width:180px">设想中的未来功能</th><th>承接方式（核心零改动）</th></tr>
+  <tr><td>Mermaid / 流程图渲染</td><td>新 Diagram 模块：命令 + 渲染器插件（源码 → 图片/形状写入页面），复用设置中心与语法包加载器。</td></tr>
+  <tr><td>数学公式</td><td>新 Formula 模块，同上。</td></tr>
+  <tr><td>代码片段库（跨笔记本复用）</td><td>新 SnippetLibrary 模块，订阅 EventBus 选区事件，复用 CodeBlock 渲染引擎。</td></tr>
+  <tr><td>批量操作 / 笔记整理</td><td>纯命令型模块，只用 CommandRegistry + 集成层。</td></tr>
+  <tr><td>Office.js 网页版伴侣</td><td>渲染核心为 netstandard2.0 纯库，可直接迁 .NET 8 + Web API，或按 token 流协议移植 TS。</td></tr>
+</table>
+
+<!-- ================= 5 UI ================= -->
+<h2 id="s5">5. 界面设计（UI）</h2>
+
+<h3>5.1 设计原则</h3>
+<ul>
+  <li><b>融入 OneNote</b>：Ribbon、对话框视觉跟随 OneNote / Fluent 风格，紫罗兰色为品牌强调色；支持浅色/深色跟随系统。</li>
+  <li><b>三十秒上手</b>：粘贴 → 见到高亮 → 点插入，三步完成；高级选项全部折叠默认值即可用。</li>
+  <li><b>预览即所得</b>：预览区与插入结果由同一渲染引擎产出，无任何"渲染差异"。</li>
+  <li><b>键盘友好</b>：所有操作可纯键盘完成（Tab 导航、Enter 插入、Esc 取消）。</li>
+</ul>
+
+<h3>5.2 OneExtend 功能区选项卡</h3>
+<div class="mock">
+  <div class="mock-cap"><b>Mockup 5-1</b>　OneNote 功能区新增「OneExtend」选项卡（命令注册表自动生成，未来新模块自动追加分组）</div>
+  <div class="rb-tabs">
+    <span class="rb-tab">文件</span><span class="rb-tab">开始</span><span class="rb-tab">插入</span><span class="rb-tab">绘图</span><span class="rb-tab">视图</span><span class="rb-tab on">OneExtend</span><span class="rb-tab">帮助</span>
+  </div>
+  <div class="rb-body">
+    <div class="rb-g"><div class="rb-btns">
+      <div class="rb-btn big"><div class="rb-ico">&lt;/&gt;</div>插入代码块<br>Ctrl+Alt+C</div>
+      <div class="rb-btn"><div class="rb-ico">✎</div>编辑代码块<br>Ctrl+Alt+E</div>
+    </div><div class="rb-lab">代码块</div></div>
+    <div class="rb-g"><div class="rb-btns">
+      <div class="rb-btn"><div class="rb-ico">≡</div>重新<br>格式化</div>
+      <div class="rb-btn"><div class="rb-ico">#</div>切换<br>行号</div>
+      <div class="rb-btn"><div class="rb-ico">🎨</div>切换<br>主题</div>
+    </div><div class="rb-lab">块操作</div></div>
+    <div class="rb-g"><div class="rb-btns">
+      <div class="rb-btn"><div class="rb-ico">⌘</div>命令面板<br>Ctrl+Alt+Shift+P</div>
+    </div><div class="rb-lab">通用</div></div>
+    <div class="rb-g"><div class="rb-btns">
+      <div class="rb-btn"><div class="rb-ico">⚙</div>设置</div>
+    </div><div class="rb-lab">OneExtend</div></div>
+  </div>
+</div>
+<div class="note"><b>降级预案</b>：若 M0 验证发现某 OneNote 版本 Ribbon 注入不可行，该版本自动启用降级入口组合（快捷键 + 右键菜单 + 桌面浮窗小工具条），功能完全等价。</div>
+
+<h3>5.3 主对话框——「插入代码块」</h3>
+<div class="mock">
+  <div class="mock-cap"><b>Mockup 5-2</b>　插入代码块主对话框（WPF，1000×640 默认尺寸，可缩放；深浅色随系统）</div>
+  <div class="dlg-title"><span>插入代码块</span><span class="dlg-x">─ □ ✕</span></div>
+  <div class="dlg">
+    <div class="dlg-side">
+      <div class="srch">🔍 搜索语言…</div>
+      <h5>最近使用</h5>
+      <div class="lang-item on star">PL/SQL (Oracle) <span class="dot">●</span></div>
+      <div class="lang-item star">SQL (ANSI) <span class="dot">●</span></div>
+      <div class="lang-item star">TypeScript TSX <span class="dot">●</span></div>
+      <h5>全部语言</h5>
+      <div class="lang-item">CSS</div>
+      <div class="lang-item">HTML</div>
+      <div class="lang-item">Java</div>
+      <div class="lang-item">JavaScript (Node.js)</div>
+      <div class="lang-item">JSON</div>
+      <div class="lang-item">SQL (MySQL)</div>
+      <div class="lang-item">SQL (T-SQL)</div>
+      <div class="lang-item">XML / XSD</div>
+      <div class="lang-item" style="color:#8b949e">＋ 导入语法包…</div>
+    </div>
+    <div class="dlg-main">
+      <div class="frow">
+        <label>代码块名称</label>
+        <input class="inp wide" value="get_orders.sql" readonly>
+        <span class="badge plsql">PL/SQL</span>
+        <span style="color:#8b949e;font-size:12px">✓ 已自动识别（可修改）</span>
+      </div>
+      <div class="ed-mock">
+        <div class="cl"><span class="n">1</span><span class="c"><span class="tk-com">-- 查询近 30 天已支付订单金额</span></span></div>
+        <div class="cl"><span class="n">2</span><span class="c"><span class="tk-kw">DECLARE</span></span></div>
+        <div class="cl"><span class="n">3</span><span class="c">   v_total <span class="tk-type">NUMBER</span> <span class="tk-op">:=</span> <span class="tk-num">0</span>;</span></div>
+        <div class="cl"><span class="n">4</span><span class="c"><span class="tk-kw">BEGIN</span></span></div>
+        <div class="cl"><span class="n">5</span><span class="c">   <span class="tk-ctl">FOR</span> rec <span class="tk-kw">IN</span> (<span class="tk-kw">SELECT</span> amount <span class="tk-kw">FROM</span> orders</span></div>
+        <div class="cl"><span class="n">6</span><span class="c">                   <span class="tk-kw">WHERE</span> status <span class="tk-op">=</span> <span class="tk-str">'PAID'</span>) <span class="tk-kw">LOOP</span></span></div>
+        <div class="cl"><span class="n">7</span><span class="c">      v_total <span class="tk-op">:=</span> v_total <span class="tk-op">+</span> rec.amount;  <span class="tk-com">-- 累加</span></span></div>
+        <div class="cl"><span class="n">8</span><span class="c">   <span class="tk-kw">END LOOP</span>;</span></div>
+        <div class="cl"><span class="n">9</span><span class="c">   <span class="tk-pkg">DBMS_OUTPUT</span>.<span class="tk-fn">PUT_LINE</span>(<span class="tk-str">'合计: '</span> <span class="tk-op">||</span> v_total);</span></div>
+        <div class="cl"><span class="n">10</span><span class="c"><span class="tk-kw">END</span>;</span></div>
+      </div>
+      <div class="opt-panel">
+        <div class="frow">
+          <span class="chk"><span class="box on"></span>显示行号</span>
+          <label>起始</label><input class="inp" style="width:56px" value="1" readonly>
+          <label>步长</label><input class="inp" style="width:56px" value="1" readonly>
+          <label>补齐</label><select class="sel"><option>自动</option></select>
+          <label>分隔</label><select class="sel"><option>竖线</option></select>
+        </div>
+        <div class="frow">
+          <span class="chk"><span class="box on"></span>自动美化</span>
+          <label>缩进</label><select class="sel"><option>4 空格</option></select>
+          <label>关键字大小写</label><select class="sel"><option>大写</option></select>
+          <span class="chk"><span class="box"></span>AND/OR 对齐</span>
+          <a href="#" style="font-size:12px">恢复原文</a>
+        </div>
+      </div>
+      <div style="border:1px solid #e6e9ee;border-radius:8px;padding:8px 12px;background:#fff">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:4px">预览（与插入效果一致）</div>
+        <div class="cb" style="margin:0">
+          <div class="cb-head"><span class="ttl">┌ get_orders.sql</span><span class="badge plsql">PL/SQL</span><span class="menu">⋯</span></div>
+          <div class="cb-body">
+            <div class="cl"><span class="n">1</span><span class="c"><span class="tk-com">-- 查询近 30 天已支付订单金额</span></span></div>
+            <div class="cl"><span class="n">2</span><span class="c"><span class="tk-kw">DECLARE</span></span></div>
+            <div class="cl"><span class="n">3</span><span class="c">   v_total <span class="tk-type">NUMBER</span> <span class="tk-op">:=</span> <span class="tk-num">0</span>;</span></div>
+            <div class="cl"><span class="n">4</span><span class="c"><span class="tk-kw">BEGIN</span></span></div>
+            <div class="cl"><span class="n">5</span><span class="c">   <span class="tk-ctl">FOR</span> rec <span class="tk-kw">IN</span> (<span class="tk-kw">SELECT</span> amount <span class="tk-kw">FROM</span> orders</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="dlg-foot">
+        <span style="color:var(--muted);font-size:12px">插入到光标处 · Enter 快速插入 · Esc 取消</span>
+        <span><button class="btn">高级(A)…</button>　<button class="btn">取消</button>　<button class="btn pri">插入(I)</button></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h3>5.4 插入后的实际效果（多语言示例）</h3>
+<p>以下为插入 OneNote 后的真实视觉目标（本稿用 HTML 等比还原）：</p>
+
+<div class="mock">
+  <div class="mock-cap"><b>Mockup 5-3</b>　示例 A：PL/SQL 块（双列行号 · 已按规则美化：子句换行、AND 对齐、关键字大写）</div>
+  <div class="cb">
+    <div class="cb-head"><span class="ttl">┌ get_orders.sql</span><span class="badge plsql">PL/SQL</span><span class="menu">⋯</span></div>
+    <div class="cb-body">
+      <div class="cl"><span class="n">1</span><span class="c"><span class="tk-com">-- 查询近 30 天已支付订单金额（按客户汇总）</span></span></div>
+      <div class="cl"><span class="n">2</span><span class="c"><span class="tk-kw">SELECT</span> o.order_id,</span></div>
+      <div class="cl"><span class="n">3</span><span class="c">       c.customer_name,</span></div>
+      <div class="cl"><span class="n">4</span><span class="c">       <span class="tk-fn">SUM</span>(oi.quantity * oi.unit_price) <span class="tk-kw">AS</span> total_amount</span></div>
+      <div class="cl"><span class="n">5</span><span class="c">  <span class="tk-kw">FROM</span> orders o</span></div>
+      <div class="cl"><span class="n">6</span><span class="c">  <span class="tk-kw">JOIN</span> customers c <span class="tk-kw">ON</span> c.customer_id = o.customer_id</span></div>
+      <div class="cl"><span class="n">7</span><span class="c">  <span class="tk-kw">JOIN</span> order_items oi <span class="tk-kw">ON</span> oi.order_id = o.order_id</span></div>
+      <div class="cl"><span class="n">8</span><span class="c"> <span class="tk-kw">WHERE</span> o.created_at <span class="tk-op">&gt;=</span> <span class="tk-fn">SYSDATE</span> - <span class="tk-num">30</span></span></div>
+      <div class="cl"><span class="n">9</span><span class="c">   <span class="tk-kw">AND</span> o.status = <span class="tk-str">'PAID'</span></span></div>
+      <div class="cl"><span class="n">10</span><span class="c">   <span class="tk-kw">AND</span> o.amount <span class="tk-op">&gt;</span> :min_amount          <span class="tk-com">-- 绑定变量</span></span></div>
+      <div class="cl"><span class="n">11</span><span class="c"> <span class="tk-kw"> GROUP BY</span> o.order_id, c.customer_name</span></div>
+      <div class="cl"><span class="n">12</span><span class="c"> <span class="tk-kw"> ORDER BY</span> total_amount <span class="tk-kw">DESC</span>;</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="mock">
+  <div class="mock-cap"><b>Mockup 5-4</b>　示例 B：React 组件（TSX）· 示例 C：Node.js（JS）—— 预览同引擎渲染</div>
+  <div class="cb">
+    <div class="cb-head"><span class="ttl">┌ OrderCard.tsx</span><span class="badge tsx">REACT TSX</span><span class="menu">⋯</span></div>
+    <div class="cb-body">
+      <div class="cl"><span class="n">1</span><span class="c"><span class="tk-kw">type</span> <span class="tk-type">Props</span> = { orderId: <span class="tk-type">number</span> };</span></div>
+      <div class="cl"><span class="n">2</span><span class="c"></span></div>
+      <div class="cl"><span class="n">3</span><span class="c"><span class="tk-kw">export function</span> <span class="tk-fn">OrderCard</span>({ orderId }: <span class="tk-type">Props</span>) {</span></div>
+      <div class="cl"><span class="n">4</span><span class="c">  <span class="tk-kw">const</span> [order, setOrder] = <span class="tk-fn">useState</span>&lt;<span class="tk-type">Order</span> | <span class="tk-kw">null</span>&gt;(<span class="tk-kw">null</span>);</span></div>
+      <div class="cl"><span class="n">5</span><span class="c">  <span class="tk-fn">useEffect</span>(() <span class="tk-kw">=&gt;</span> {</span></div>
+      <div class="cl"><span class="n">6</span><span class="c">    <span class="tk-fn">loadOrder</span>(orderId).<span class="tk-fn">then</span>(setOrder);</span></div>
+      <div class="cl"><span class="n">7</span><span class="c">  }, [orderId]);</span></div>
+      <div class="cl"><span class="n">8</span><span class="c"></span></div>
+      <div class="cl"><span class="n">9</span><span class="c">  <span class="tk-kw">return</span> <span class="tk-op">&lt;</span><span class="tk-type">Card</span> <span class="tk-attr">title</span>=<span class="tk-str">{`订单 ${orderId}`}</span><span class="tk-op">&gt;</span>{order?.status ?? <span class="tk-str">'加载中…'</span>}<span class="tk-op">&lt;/</span><span class="tk-type">Card</span><span class="tk-op">&gt;</span>;</span></div>
+      <div class="cl"><span class="n">10</span><span class="c">}</span></div>
+    </div>
+  </div>
+  <div class="cb" style="border-radius:0;border-left:none;border-right:none;margin:0">
+    <div class="cb-head"><span class="ttl">┌ sync-orders.js</span><span class="badge js">NODE.JS</span><span class="menu">⋯</span></div>
+    <div class="cb-body">
+      <div class="cl"><span class="n">1</span><span class="c"><span class="tk-com">// 拉取订单并汇总已支付金额</span></span></div>
+      <div class="cl"><span class="n">2</span><span class="c"><span class="tk-kw">async function</span> <span class="tk-fn">getRecentOrders</span>(days = <span class="tk-num">30</span>) {</span></div>
+      <div class="cl"><span class="n">3</span><span class="c">  <span class="tk-kw">const</span> res = <span class="tk-kw">await</span> <span class="tk-fn">fetch</span>(<span class="tk-str">`/api/orders?days=</span><span class="tk-var">${days}</span><span class="tk-str">`</span>);</span></div>
+      <div class="cl"><span class="n">4</span><span class="c">  <span class="tk-kw">const</span> orders = <span class="tk-kw">await</span> res.<span class="tk-fn">json</span>();</span></div>
+      <div class="cl"><span class="n">5</span><span class="c">  <span class="tk-kw">return</span> orders.<span class="tk-fn">filter</span>(o <span class="tk-kw">=&gt;</span> o.status === <span class="tk-str">'PAID'</span>)</span></div>
+      <div class="cl"><span class="n">6</span><span class="c">              .<span class="tk-fn">reduce</span>((sum, o) <span class="tk-kw">=&gt;</span> sum + o.amount, <span class="tk-num">0</span>);</span></div>
+      <div class="cl"><span class="n">7</span><span class="c">}</span></div>
+      <div class="cl"><span class="n">8</span><span class="c"><span class="tk-var">module</span>.exports = { getRecentOrders };</span></div>
+    </div>
+  </div>
+  <div class="cb" style="border-radius:0 0 8px 8px;border-top:none;margin:0">
+    <div class="cb-head"><span class="ttl">┌ order-form.html</span><span class="badge html">HTML</span><span class="menu">⋯</span></div>
+    <div class="cb-body">
+      <div class="cl"><span class="n">1</span><span class="c"><span class="tk-op">&lt;</span><span class="tk-tag">form</span> <span class="tk-attr">class</span>=<span class="tk-str">"order-form"</span> <span class="tk-attr">data-bind</span>=<span class="tk-str">"submit: save"</span><span class="tk-op">&gt;</span></span></div>
+      <div class="cl"><span class="n">2</span><span class="c">  <span class="tk-op">&lt;</span><span class="tk-tag">label</span> <span class="tk-attr">for</span>=<span class="tk-str">"orderId"</span><span class="tk-op">&gt;</span>订单号<span class="tk-op">&lt;/</span><span class="tk-tag">label</span><span class="tk-op">&gt;</span></span></div>
+      <div class="cl"><span class="n">3</span><span class="c">  <span class="tk-op">&lt;</span><span class="tk-tag">input</span> <span class="tk-attr">id</span>=<span class="tk-str">"orderId"</span> <span class="tk-attr">type</span>=<span class="tk-str">"number"</span> <span class="tk-attr">required</span> <span class="tk-op">/&gt;</span></span></div>
+      <div class="cl"><span class="n">4</span><span class="c"><span class="tk-op">&lt;/</span><span class="tk-tag">form</span><span class="tk-op">&gt;</span></span></div>
+    </div>
+  </div>
+</div>
+
+<h3>5.5 代码块上下文菜单</h3>
+<div style="display:flex;gap:30px;align-items:flex-start;flex-wrap:wrap">
+  <div class="ctx">
+    <div>✎ 编辑代码块 <span class="k">Ctrl+Alt+E</span></div>
+    <div>⧉ 复制为纯文本 <span class="k">Ctrl+Shift+C</span></div>
+    <hr>
+    <div>≡ 重新格式化…</div>
+    <div>🌐 切换语言高亮…</div>
+    <div>🎨 切换主题（浅/深）</div>
+    <div># 显示 / 隐藏行号</div>
+    <hr>
+    <div>ℹ 块信息（语言·版本·行数）</div>
+  </div>
+  <div style="flex:1;min-width:280px;font-size:13.5px">
+    <p><b>Mockup 5-5</b>　光标位于代码块内时右键唤出（由 Meta 元数据识别块身份）。</p>
+    <ul>
+      <li>「编辑代码块」将块还原为源码载入主对话框（FR-602），保存后原位重建；</li>
+      <li>所有"块操作"同时出现在 Ribbon「块操作」分组与命令面板中——同一命令、三个入口；</li>
+      <li>菜单项由命令注册表生成：未来新模块的块级操作自动汇入。</li>
+    </ul>
+  </div>
+</div>
+
+<h3>5.6 设置中心</h3>
+<div class="mock">
+  <div class="mock-cap"><b>Mockup 5-6</b>　设置中心（左侧导航 + Schema 驱动的设置页，新模块自动追加导航项）</div>
+  <div class="set">
+    <div class="set-nav">
+      <div>通用</div>
+      <div class="on">外观</div>
+      <div>语言与语法包</div>
+      <div>格式化</div>
+      <div>快捷键</div>
+      <div>模块管理</div>
+      <div>关于 OneExtend</div>
+    </div>
+    <div class="set-body">
+      <div class="set-row"><span class="lbl">代码主题</span><select class="sel"><option>浅色（Light）</option><option>深色（Dark）</option><option>高对比</option><option>自定义…</option></select></div>
+      <div class="set-row"><span class="lbl">等宽字体</span><select class="sel"><option>Consolas（默认）</option><option>Cascadia Mono</option><option>JetBrains Mono</option></select></div>
+      <div class="set-row"><span class="lbl">字号</span><select class="sel"><option>10</option><option>11</option></select></div>
+      <div class="set-row"><span class="lbl">跟随 Windows 深浅色</span><span class="chk"><span class="box on"></span>启用</span></div>
+      <div class="set-row"><span class="lbl">默认显示行号</span><span class="chk"><span class="box on"></span>启用</span></div>
+      <div class="set-row"><span class="lbl">界面语言</span><select class="sel"><option>中文（简体）</option><option>English</option></select></div>
+      <div style="margin-top:14px;display:flex;gap:10px"><button class="btn">恢复默认</button><button class="btn">导出配置…</button><button class="btn">导入配置…</button><span style="flex:1"></span><button class="btn pri">保存</button></div>
+    </div>
+  </div>
+</div>
+
+<h3>5.7 核心交互流程</h3>
+<ol>
+  <li>用户在 OneNote 中定位光标 → 按 <code>Ctrl+Alt+C</code>（或 Ribbon / 右键）唤起对话框；</li>
+  <li>剪贴板有文本则自动填入并启发式识别语言，用户可搜索切换语言（最近使用置顶）；</li>
+  <li>编辑器实时高亮，选项区调整行号 / 美化 / 标题，预览区即时刷新（200ms 防抖）；</li>
+  <li>点击「插入」（或 Enter）→ 后台线程生成页面 XML → Interop 写入当前页 → 对话框关闭，插入内容在光标处呈现；</li>
+  <li>后续：光标置于块内按 <code>Ctrl+Alt+E</code> → 还源码重编辑 → 保存原位刷新。</li>
+</ol>
+
+<!-- ================= 6 数据结构 ================= -->
+<h2 id="s6">6. 数据结构定义</h2>
+
+<h3>6.1 用户设置（%AppData%\OneExtend\settings.json）</h3>
+<pre class="snip">{
+  "version": 1,
+  "general":  { "defaultLanguage": "plsql", "uiLanguage": "zh-CN" },
+  "appearance": {
+    "theme": "light",                       // light | dark | high-contrast | 自定义主题ID
+    "followSystem": true,
+    "font": { "family": "Consolas", "size": 10 }
+  },
+  "lineNumbers": { "enabled": true, "start": 1, "step": 1, "padding": "auto",
+                   "separator": "bar", "mode": "column" },   // column | inline
+  "formatting": {
+    "autoBeautify": true,
+    "indent": { "style": "space", "width": 4 },
+    "perLanguage": {
+      "sql":   { "keywordCase": "upper", "commaPosition": "trailing",
+                 "clauseNewline": true, "alignAndOr": true },
+      "plsql": { "keywordCase": "upper", "indentDeclarations": 3 }
+    }
+  },
+  "shortcuts": { "insertCodeBlock": "Ctrl+Alt+C", "editCodeBlock": "Ctrl+Alt+E",
+                 "commandPalette": "Ctrl+Alt+Shift+P" },
+  "modules": { "codeblock": { "enabled": true } }            // 未来模块逐个追加
+}</pre>
+
+<h3>6.2 语法包（grammars/*.grammar.json，附 JSON Schema 校验）</h3>
+<pre class="snip">{
+  "id": "plsql", "name": "PL/SQL (Oracle)", "version": "1.0.0",
+  "basedOn": "sql-ansi",                                   // 继承 ANSI SQL，叠加 Oracle 词法
+  "extensions": [".sql", ".pkb", ".pks", ".trg", ".fnc", ".prc"],
+  "keywords": {
+    "control": ["IF","ELSIF","ELSE","LOOP","FOR","WHILE","CASE","RETURN","EXIT","GOTO","RAISE"],
+    "keyword": ["DECLARE","BEGIN","EXCEPTION","IS","AS","CURSOR","RECORD","TYPE","PROCEDURE","FUNCTION","PACKAGE","TRIGGER","PRAGMA"]
+  },
+  "tokens": [                                              // 按序匹配，先命中先赢
+    { "type": "comment.line",       "pattern": "--[^\\n]*" },
+    { "type": "comment.block",      "pattern": "/\\*[\\s\\S]*?\\*/" },
+    { "type": "string.q",           "pattern": "q'\\[([^\\]]|\\]\\D)*\\]'" },
+    { "type": "string",             "pattern": "'(?:[^']|'')*'" },
+    { "type": "bindvar",            "pattern": ":[A-Za-z_][\\w$]*" },
+    { "type": "substitution",       "pattern": "&[A-Za-z_][\\w$]*\\.?" },
+    { "type": "builtin.package",    "pattern": "\\b(?:DBMS_[A-Z0-9_]+|UTL_[A-Z0-9_]+|APEX_[A-Z0-9_]+)\\b" },
+    { "type": "number",             "pattern": "\\d+(?:\\.\\d+)?(?:[fFdD]|e[+-]?\\d+)?" }
+  ],
+  "formatter": { "ruleset": "plsql-structured" }           // 引用格式化规则集
+}</pre>
+
+<h3>6.3 格式化规则集（SQL 美化核心，节选）</h3>
+<pre class="snip">{
+  "id": "sql-structured",
+  "clauseKeywords": ["SELECT","FROM","WHERE","GROUP BY","HAVING","ORDER BY",
+                     "UNION ALL","MERGE","INSERT INTO","VALUES","SET","RETURNING"],
+  "rules": {
+    "clauseOnOwnLine": true,          // 子句关键字独立成行并顶格
+    "selectColumnsAligned": true,     // SELECT 列逗号后换行并对齐
+    "joinOnAlignment": true,          // JOIN 与 ON 对齐缩进
+    "andOrIndent": true,              // WHERE 内 AND/OR 缩进两格并对齐
+    "commaPosition": "trailing",      // trailing | leading（团队规范可切换）
+    "caseWhenIndent": 4,              // CASE WHEN/THEN/ELSE 结构缩进
+    "subqueryIndent": 4               // 子查询嵌套缩进
+  }
+}</pre>
+
+<!-- ================= 7 里程碑 ================= -->
+<h2 id="s7">7. 里程碑计划</h2>
+<table>
+  <tr><th style="width:70px">阶段</th><th style="width:210px">内容</th><th style="width:70px">工期</th><th>关键交付 / 出口条件</th></tr>
+  <tr><td><b>M0</b></td><td>技术验证（Spike）</td><td>2 周</td><td>Interop 连通；页面写入表格+底纹+彩色 run 成功；Ribbon 注入验证（含降级预案结论）；1000 行写入性能摸底。</td></tr>
+  <tr><td><b>M1</b></td><td>核心插入管线</td><td>4 周</td><td>Tokenizer + 主题 + 3 语言（PL/SQL、JS、HTML）；主对话框（含预览）；行号双列/内联；等宽渲染；快捷键。</td></tr>
+  <tr><td><b>M2</b></td><td>语言完备 + 美化引擎</td><td>4 周</td><td>CSS / TS / TSX / Java / SQL 方言包；SQL 与 PL/SQL 结构化美化规则集；「原始/美化」切换。</td></tr>
+  <tr><td><b>M3</b></td><td>回读编辑 + 设置中心</td><td>3 周</td><td>Meta 回读、编辑代码块原位重建；复制纯文本；设置中心；语法包管理与导入；命令面板。</td></tr>
+  <tr><td><b>M4</b></td><td>打磨与发布</td><td>2 周</td><td>性能与异常加固；MSI 安装包（含卸载干净验证）；zh-CN/en-US；用户手册；v1.0 发布。</td></tr>
+</table>
+<p style="color:var(--muted);font-size:13px">单人全职估算约 15 周；M1 起各阶段可交付可试用版本（渐进发布）。每阶段出口条件不满足不进入下一阶段。</p>
+
+<!-- ================= 8 风险 ================= -->
+<h2 id="s8">8. 风险与对策</h2>
+<table>
+  <tr><th style="width:60px">编号</th><th>风险</th><th style="width:46%">对策</th></tr>
+  <tr><td>R-01</td><td>OneNote Interop 属弱文档化 API，版本升级可能变动</td><td>COM 访问全部收敛在 OneNote.OneNote 集成层（单点替换）；启动时探测 OneNote 版本并做兼容矩阵告警；跟踪 OneMore 社区的适配动态。</td></tr>
+  <tr><td>R-02</td><td>页面 XML 生成不合 Schema 导致内容损坏</td><td>XmlBuilder 严格按 OneNote XML Schema 单测；写入前备份页面 XML 到本地（可一键回滚）；发布前覆盖 2016→M365 版本矩阵回归。</td></tr>
+  <tr><td>R-03</td><td>超长代码块（数千行）插入慢 / OneNote 卡顿</td><td>后台线程分块写入 + 进度条；&gt;2000 行弹窗建议拆分；性能红线写入 CI（1000 行 ≤ 2s）。</td></tr>
+  <tr><td>R-04</td><td>Ribbon 注入在某些 OneNote 版本不可行</td><td>M0 首项验证；降级入口（快捷键 + 右键 + 浮动工具条）功能等价，架构三入口同源。</td></tr>
+  <tr><td>R-05</td><td>双列行号遇软换行错位</td><td>FR-204 双模式 + 超长行检测自动建议切换；文档明示取舍。</td></tr>
+  <tr><td>R-06</td><td>与 OneMore 等开源项目知识产权边界</td><td>仅借鉴架构思想，代码全部独立实现；引入任何第三方库前核查许可证；OneMore 为开源项目，参考其公开文档中的行为定义。</td></tr>
+  <tr><td>R-07</td><td>杀软 / 企业策略拦截 COM 注册</td><td>HKCU 注册（免管理员）；提供便携诊断工具输出加载失败原因（日志 + 注册检查）。</td></tr>
+</table>
+
+<!-- ================= 9 附录 ================= -->
+<h2 id="s9">9. 附录</h2>
+
+<h3>9.1 术语表</h3>
+<table>
+  <tr><th style="width:170px">术语</th><th>说明</th></tr>
+  <tr><td>OneNote 桌面版</td><td>Win32 版 OneNote（Microsoft 365 / 2016–LTSC 2024），微软当前唯一持续演进的 Windows 客户端（UWP 版已退役）。</td></tr>
+  <tr><td>COM Add-in</td><td>经 COM 接口加载进 OneNote 进程内的 .NET 扩展，本项目插件宿主形态。</td></tr>
+  <tr><td>Interop / PIA</td><td><code>Microsoft.Office.Interop.OneNote</code>，官方 OneNote 应用对象互操作程序集（页面层级 / XML 读写 API）。</td></tr>
+  <tr><td>页面 XML</td><td>OneNote 以 <code>one:</code> 命名空间 XML 描述页面内容，插件通过 GetPageContent / UpdatePageContent 读写。</td></tr>
+  <tr><td>语法包 / 主题包</td><td>声明式 JSON 数据文件，分别定义一门语言的 token 规则与配色方案。</td></tr>
+  <tr><td>PL/SQL</td><td>Oracle 对 SQL 的过程化扩展（块、变量、异常、存储过程等）。</td></tr>
+</table>
+
+<h3>9.2 参考资料</h3>
+<ul>
+  <li>OneMore（开源 OneNote COM Add-in，架构参考）：<a href="https://github.com/stevencohn/OneMore">github.com/stevencohn/OneMore</a> · <a href="https://onemoreaddin.com">onemoreaddin.com</a></li>
+  <li>OneNote 桌面开发官方文档（Interop 与页面 XML）：<a href="https://learn.microsoft.com/en-us/office/client-developer/onenote/onenote-home">learn.microsoft.com · OneNote client development</a></li>
+  <li>Office.js OneNote 支持范围（仅网页版）：<a href="https://learn.microsoft.com/en-us/office/dev/add-ins/quickstarts/onenote-quickstart">OneNote add-in quickstart</a> · <a href="https://learn.microsoft.com/en-us/office/dev/add-ins/reference/requirement-sets/onenote-api-requirement-sets">OneNote JavaScript API requirement sets</a></li>
+</ul>
+
+<h3>9.3 文档修订记录</h3>
+<table>
+  <tr><th style="width:100px">版本</th><th style="width:120px">日期</th><th>说明</th></tr>
+  <tr><td>V1.0</td><td>2026-09-26</td><td>初稿：需求分析、技术选型（基于 2026-09 平台现状调研）、架构设计、UI 设计稿、里程碑与风险。</td></tr>
+</table>
+
+</div><!-- /wrap -->
+
+<div class="foot">OneExtend 需求文档 V1.0 · 2026-09-26 · 工程目录 D:\01_WorkSpace\01_Project\12_OnenoteExtend</div>
+</div><!-- /page -->
+</body>
+</html>

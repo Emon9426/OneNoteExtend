@@ -1,0 +1,29 @@
+# Build artifacts
+bin/
+obj/
+out/
+publish/
+
+# Visual Studio / Rider
+.vs/
+.idea/
+*.user
+*.suo
+
+# Test results
+TestResults/
+*.trx
+
+# NuGet
+*.nupkg
+packages/
+
+# Rider/VS caches
+*.DotSettings.user
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Local runtime data
+*.log

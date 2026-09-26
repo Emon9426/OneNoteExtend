@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore OneExtend.sln
+
+      - name: Build (Release)
+        run: dotnet build OneExtend.sln -c Release --no-restore
+
+      - name: Test
+        run: >
+          dotnet test src/OneExtend.Tests/OneExtend.Tests.csproj
+          -c Release --no-build --logger trx
+          --results-directory ./TestResults
+
+      - name: Publish test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: TestResults

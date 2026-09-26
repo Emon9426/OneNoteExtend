@@ -1,0 +1,42 @@
+{
+  "$schema": "./schemas/grammar.schema.json",
+  "id": "typescript",
+  "name": "TypeScript",
+  "version": "1.0.0",
+  "basedOn": "javascript",
+  "formatter": "generic-brace",
+  "extensions": [".ts"],
+  "detection": {
+    "patterns": [
+      ":\\s*(string|number|boolean|any|unknown|never|void)\\b",
+      "\\binterface\\s+[A-Z]\\w*",
+      "\\btype\\s+[A-Za-z_$][\\w$]*\\s*=",
+      "\\benum\\s+[A-Z]\\w*",
+      "\\bimplements\\b",
+      "<T[>,\\s]"
+    ]
+  },
+  "keywords": {
+    "control": [ "satisfies" ],
+    "keyword": [
+      "interface", "type", "enum", "implements", "readonly", "public",
+      "private", "protected", "abstract", "declare", "namespace", "keyof",
+      "infer", "is", "asserts", "override", "satisfies"
+    ],
+    "type": [
+      "string", "number", "boolean", "any", "unknown", "never", "void",
+      "object", "symbol", "bigint", "T", "K", "V", "Promise", "Array", "Record",
+      "Partial", "Readonly", "Pick", "Omit"
+    ]
+  },
+  "tokens": [
+    { "type": "comment.line",   "pattern": "//[^\\n]*" },
+    { "type": "comment.block",  "pattern": "/\\*[\\s\\S]*?\\*/" },
+    { "type": "string.template","pattern": "`(?:[^`\\\\]|\\\\[\\s\\S])*`" },
+    { "type": "string",         "pattern": "'(?:[^'\\\\\\n]|\\\\[\\s\\S])*'|\"(?:[^\"\\\\\\n]|\\\\[\\s\\S])*\"" },
+    { "type": "number",         "pattern": "\\b\\d[\\d_]*(?:\\.\\d+)?(?:[eE][+-]?\\d+)?\\b|\\b0[xXbBoO][0-9a-fA-F_]+" },
+    { "type": "operator",       "pattern": "=>|===|!==|==|!=|<=|>=|&&|\\|\\||\\+\\+|--|\\+=|-=|\\*=|/=|%=|\\?\\?|\\?\\.|\\.\\.\\.|[=<>+\\-*/%!&|^~?:]" },
+    { "type": "punctuation",    "pattern": "[()\\[\\]{};,.]" },
+    { "type": "identifier",     "pattern": "[A-Za-z_$][\\w$]*" }
+  ]
+}

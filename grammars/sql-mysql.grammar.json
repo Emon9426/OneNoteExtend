@@ -1,0 +1,49 @@
+{
+  "$schema": "./schemas/grammar.schema.json",
+  "id": "mysql",
+  "name": "SQL (MySQL)",
+  "version": "1.0.0",
+  "basedOn": "sql-ansi",
+  "caseInsensitive": true,
+  "formatter": "sql-structured",
+  "extensions": [],
+  "detection": {
+    "patterns": [
+      "\\bLIMIT\\s+\\d+",
+      "\\bAUTO_INCREMENT\\b",
+      "\\bENGINE\\s*=\\s*InnoDB",
+      "\\bON\\s+DUPLICATE\\s+KEY\\b",
+      "\\bNOW\\s*\\(",
+      "\\bIFNULL\\s*\\("
+    ]
+  },
+  "keywords": {
+    "control": [ "IF", "ELSEIF", "REPEAT", "UNTIL" ],
+    "keyword": [
+      "LIMIT", "OFFSET", "AUTO_INCREMENT", "ENGINE", "UNSIGNED", "SIGNED",
+      "ZEROFILL", "DUPLICATE", "IGNORE", "DELAYED", "STRAIGHT_JOIN",
+      "SQL_CALC_FOUND_ROWS", "SQL_NO_CACHE", "LOCK", "UNLOCK", "LOAD", "DATA",
+      "INFILE", "OUTFILE", "SIGNAL", "RESIGNAL", "HANDLER"
+    ],
+    "type": [
+      "TINYINT", "MEDIUMINT", "BIGINT UNSIGNED", "ENUM", "SET", "YEAR",
+      "TINYTEXT", "MEDIUMTEXT", "LONGTEXT", "TINYBLOB", "MEDIUMBLOB",
+      "LONGBLOB", "DOUBLE PRECISION", "JSON", "GEOMETRY"
+    ],
+    "function": [
+      "NOW", "CURDATE", "CURTIME", "IFNULL", "CONCAT_WS", "GROUP_CONCAT",
+      "DATE_FORMAT", "STR_TO_DATE", "UNIX_TIMESTAMP", "FROM_UNIXTIME",
+      "LAST_INSERT_ID", "FOUND_ROWS"
+    ]
+  },
+  "tokens": [
+    { "type": "comment.line",    "pattern": "#[^\\n]*|--[^\\n]*" },
+    { "type": "comment.block",   "pattern": "/\\*[\\s\\S]*?\\*/" },
+    { "type": "string",          "pattern": "(?:'(?:[^']|'')*'|\"(?:[^\"]|\"\")*)" },
+    { "type": "variable",        "pattern": "@[A-Za-z_][\\w$]*" },
+    { "type": "number",          "pattern": "\\d+(?:\\.\\d+)?" },
+    { "type": "operator",        "pattern": "<=>|<>|!=|<=|>=|=|<|>|\\+|-|\\*|/|%|\\|" },
+    { "type": "punctuation",     "pattern": "[(),.;`]" },
+    { "type": "identifier",      "pattern": "[A-Za-z_][\\w$]*" }
+  ]
+}

@@ -1,0 +1,13 @@
+<Project>
+  <PropertyGroup>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <VersionSuffix>alpha1</VersionSuffix>
+    <Authors>Emon9426</Authors>
+    <Product>OneExtend - OneNote Code Block Add-in</Product>
+    <Copyright>Copyright © 2026 Emon9426</Copyright>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+</Project>

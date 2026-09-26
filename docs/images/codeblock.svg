@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="430" viewBox="0 0 880 430" role="img" aria-label="Inserted code block in OneNote">
+  <style>.t{font-family:Segoe UI,Microsoft YaHei,sans-serif}.m{font-family:Consolas,Menlo,monospace}</style>
+  <rect width="880" height="430" fill="#FDFDFE"/>
+  <!-- page context -->
+  <text x="60" y="44" class="t" font-size="20" font-weight="700" fill="#3C424B">订单排查手册 · Order Playbook</text>
+  <text x="60" y="74" class="t" font-size="14" fill="#57606A">2026-09-26 · 以下为近 30 天订单金额统计脚本（Ctrl+Alt+C 插入）</text>
+
+  <!-- code block header -->
+  <rect x="60" y="94" width="760" height="30" rx="8" fill="#EEF0F3" stroke="#D0D7DE"/>
+  <rect x="60" y="110" width="760" height="14" fill="#EEF0F3" stroke="#D0D7DE"/>
+  <text x="78" y="114" class="m" font-size="13" font-weight="bold" fill="#3C424B">┌ get_orders.sql</text>
+  <rect x="742" y="99" width="60" height="20" rx="10" fill="#FDEEE0"/>
+  <text x="772" y="113" text-anchor="middle" class="t" font-size="11" font-weight="700" fill="#C2410C">PL/SQL</text>
+
+  <!-- line number column -->
+  <rect x="60" y="124" width="56" height="266" fill="#F3F4F6" stroke="#D0D7DE"/>
+  <!-- code body -->
+  <rect x="116" y="124" width="704" height="266" fill="#FBFCFD" stroke="#D0D7DE"/>
+  <g class="m" font-size="13">
+    <!-- 1 -->
+    <text x="104" y="144" fill="#8B949E" text-anchor="end">1</text>
+    <text x="104" y="144" fill="#D8DEE4" text-anchor="end" opacity="0">.</text>
+    <text x="112" y="144" fill="#D8DEE4">│</text>
+    <text x="128" y="144" fill="#008000">-- 查询近 30 天已支付订单（按客户汇总）</text>
+    <!-- 2 -->
+    <text x="104" y="164" fill="#8B949E" text-anchor="end">2</text>
+    <text x="112" y="164" fill="#D8DEE4">│</text>
+    <text x="128" y="164" fill="#0000FF" font-weight="bold">SELECT</text>
+    <text x="185" y="164" fill="#24292F">o.order_id,</text>
+    <!-- 3 -->
+    <text x="104" y="184" fill="#8B949E" text-anchor="end">3</text>
+    <text x="112" y="184" fill="#D8DEE4">│</text>
+    <text x="185" y="184" fill="#24292F" xml:space="preserve">       c.customer_name,</text>
+    <!-- 4 -->
+    <text x="104" y="204" fill="#8B949E" text-anchor="end">4</text>
+    <text x="112" y="204" fill="#D8DEE4">│</text>
+    <text x="185" y="204" fill="#24292F" xml:space="preserve">       <tspan fill="#795E26">SUM</tspan>(oi.quantity * oi.unit_price) <tspan fill="#0000FF" font-weight="bold">AS</tspan> total_amount</text>
+    <!-- 5 -->
+    <text x="104" y="224" fill="#8B949E" text-anchor="end">5</text>
+    <text x="112" y="224" fill="#D8DEE4">│</text>
+    <text x="152" y="224" fill="#0000FF" font-weight="bold">FROM</text>
+    <text x="192" y="224" fill="#24292F">orders o</text>
+    <!-- 6 -->
+    <text x="104" y="244" fill="#8B949E" text-anchor="end">6</text>
+    <text x="112" y="244" fill="#D8DEE4">│</text>
+    <text x="152" y="244" fill="#0000FF" font-weight="bold">JOIN</text>
+    <text x="192" y="244" fill="#24292F" xml:space="preserve">customers c <tspan fill="#0000FF" font-weight="bold">ON</tspan> c.customer_id = o.customer_id</text>
+    <!-- 7 -->
+    <text x="104" y="264" fill="#8B949E" text-anchor="end">7</text>
+    <text x="112" y="264" fill="#D8DEE4">│</text>
+    <text x="145" y="264" fill="#0000FF" font-weight="bold">WHERE</text>
+    <text x="200" y="264" fill="#24292F" xml:space="preserve">o.created_at <tspan fill="#24292F">&gt;=</tspan> <tspan fill="#267F99">SYSDATE</tspan> - <tspan fill="#098658">30</tspan></text>
+    <!-- 8 -->
+    <text x="104" y="284" fill="#8B949E" text-anchor="end">8</text>
+    <text x="112" y="284" fill="#D8DEE4">│</text>
+    <text x="152" y="284" fill="#0000FF" font-weight="bold">AND</text>
+    <text x="185" y="284" fill="#24292F" xml:space="preserve">o.status = <tspan fill="#A31515">'PAID'</tspan></text>
+    <!-- 9 -->
+    <text x="104" y="304" fill="#8B949E" text-anchor="end">9</text>
+    <text x="112" y="304" fill="#D8DEE4">│</text>
+    <text x="152" y="304" fill="#0000FF" font-weight="bold">AND</text>
+    <text x="185" y="304" fill="#24292F" xml:space="preserve">o.amount <tspan fill="#24292F">&gt;</tspan> <tspan fill="#8250DF">:min_amount</tspan></text>
+    <!-- 10 -->
+    <text x="102" y="324" fill="#8B949E" text-anchor="end">10</text>
+    <text x="112" y="324" fill="#D8DEE4">│</text>
+    <text x="128" y="324" fill="#0000FF" font-weight="bold">GROUP BY</text>
+    <text x="205" y="324" fill="#24292F">o.order_id, c.customer_name</text>
+    <!-- 11 -->
+    <text x="102" y="344" fill="#8B949E" text-anchor="end">11</text>
+    <text x="112" y="344" fill="#D8DEE4">│</text>
+    <text x="128" y="344" fill="#0000FF" font-weight="bold">ORDER BY</text>
+    <text x="205" y="344" fill="#24292F" xml:space="preserve">total_amount <tspan fill="#0000FF" font-weight="bold">DESC</tspan>;</text>
+    <!-- 12 -->
+    <text x="102" y="364" fill="#8B949E" text-anchor="end">12</text>
+    <text x="112" y="364" fill="#D8DEE4">│</text>
+    <text x="128" y="364" fill="#24292F" xml:space="preserve"><tspan fill="#008000">-- Ctrl+Alt+E 重新编辑 · Ctrl+Shift+C 复制为纯文本</tspan></text>
+  </g>
+  <text x="60" y="416" class="t" font-size="12" fill="#8B949E">插入的块是原生 OneNote 内容（表格 + 彩色文本）：在手机 / 网页端正常显示，可搜索、可复制 · inserted blocks are native OneNote content</text>
+</svg>

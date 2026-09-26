@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>OneExtend OneNote integration: late-bound COM session wrapper. The only place that talks to the OneNote application object.</Description>
+  </PropertyGroup>
+
+</Project>

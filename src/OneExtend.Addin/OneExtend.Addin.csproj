@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Description>OneExtend COM add-in host for OneNote desktop: IDTExtensibility2 entry point, global hotkeys and command wiring.</Description>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OneExtend.Core\OneExtend.Core.csproj" />
+    <ProjectReference Include="..\OneExtend.CodeBlock\OneExtend.CodeBlock.csproj" />
+    <ProjectReference Include="..\OneExtend.CodeBlock.UI\OneExtend.CodeBlock.UI.csproj" />
+    <ProjectReference Include="..\OneExtend.Infrastructure\OneExtend.Infrastructure.csproj" />
+    <ProjectReference Include="..\OneExtend.OneNote\OneExtend.OneNote.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\grammars\*.grammar.json" Link="grammars\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\themes\*.json" Link="themes\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

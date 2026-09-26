@@ -1,0 +1,51 @@
+{
+  "$schema": "./schemas/grammar.schema.json",
+  "id": "sql-ansi",
+  "name": "SQL (ANSI)",
+  "version": "1.0.0",
+  "caseInsensitive": true,
+  "formatter": "sql-structured",
+  "extensions": [".sql"],
+  "detection": {
+    "patterns": [
+      "\\bSELECT\\b[\\s\\S]{0,300}?\\bFROM\\b",
+      "\\bINSERT\\s+INTO\\b",
+      "\\bUPDATE\\b[\\s\\S]{0,120}?\\bSET\\b",
+      "\\bDELETE\\s+FROM\\b",
+      "\\bCREATE\\s+(TABLE|VIEW|INDEX)\\b"
+    ]
+  },
+  "keywords": {
+    "control": [ "CASE", "WHEN", "THEN", "ELSE", "END" ],
+    "keyword": [
+      "SELECT", "FROM", "WHERE", "GROUP", "BY", "HAVING", "ORDER", "ASC", "DESC",
+      "DISTINCT", "AS", "AND", "OR", "NOT", "NULL", "IS", "IN", "LIKE", "BETWEEN",
+      "JOIN", "INNER", "LEFT", "RIGHT", "FULL", "OUTER", "CROSS", "ON", "USING",
+      "UNION", "ALL", "INTERSECT", "EXCEPT", "INSERT", "INTO", "VALUES", "UPDATE",
+      "SET", "DELETE", "CREATE", "TABLE", "VIEW", "INDEX", "DROP", "ALTER", "ADD",
+      "PRIMARY", "KEY", "FOREIGN", "REFERENCES", "DEFAULT", "CHECK", "UNIQUE",
+      "CONSTRAINT", "EXISTS", "CAST", "TRUNCATE", "COMMIT", "ROLLBACK", "GRANT",
+      "REVOKE", "OVER", "PARTITION", "ROWS", "RANGE", "WITH", "RECURSIVE", "REPLACE"
+    ],
+    "type": [
+      "INT", "INTEGER", "SMALLINT", "BIGINT", "DECIMAL", "NUMERIC", "FLOAT",
+      "REAL", "DOUBLE", "PRECISION", "CHAR", "VARCHAR", "NCHAR", "NVARCHAR",
+      "DATE", "TIME", "TIMESTAMP", "INTERVAL", "BOOLEAN", "BLOB", "CLOB", "TEXT"
+    ],
+    "function": [
+      "COUNT", "SUM", "AVG", "MIN", "MAX", "COALESCE", "NULLIF", "SUBSTRING",
+      "TRIM", "UPPER", "LOWER", "LENGTH", "ABS", "ROUND", "MOD", "ROW_NUMBER",
+      "RANK", "DENSE_RANK", "LAG", "LEAD", "CURRENT_DATE", "CURRENT_TIMESTAMP"
+    ]
+  },
+  "tokens": [
+    { "type": "comment.line",   "pattern": "--[^\\n]*" },
+    { "type": "comment.block",  "pattern": "/\\*[\\s\\S]*?\\*/" },
+    { "type": "string",         "pattern": "'(?:[^']|'')*'" },
+    { "type": "bindvar",        "pattern": ":[A-Za-z_][\\w$]*" },
+    { "type": "number",         "pattern": "\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?" },
+    { "type": "operator",       "pattern": "\\|\\||<>|!=|<=|>=|=|<|>|\\+|-|\\*|/|%|\\^" },
+    { "type": "punctuation",    "pattern": "[(),.;]" },
+    { "type": "identifier",     "pattern": "[A-Za-z_][\\w$]*" }
+  ]
+}

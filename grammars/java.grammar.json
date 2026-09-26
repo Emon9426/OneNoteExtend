@@ -1,0 +1,49 @@
+{
+  "$schema": "./schemas/grammar.schema.json",
+  "id": "java",
+  "name": "Java",
+  "version": "1.0.0",
+  "formatter": "generic-brace",
+  "extensions": [".java"],
+  "detection": {
+    "patterns": [
+      "\\bpublic\\s+(class|interface|enum)\\s+\\w+",
+      "System\\.out\\.print",
+      "\\bpackage\\s+[\\w.]+;",
+      "\\bimport\\s+(java|javax|org)\\.",
+      "\\bvoid\\s+\\w+\\s*\\("
+    ]
+  },
+  "keywords": {
+    "control": [
+      "if", "else", "for", "while", "do", "switch", "case", "default", "break",
+      "continue", "return", "throw", "try", "catch", "finally"
+    ],
+    "keyword": [
+      "public", "private", "protected", "static", "final", "abstract", "class",
+      "interface", "enum", "extends", "implements", "super", "this", "new",
+      "package", "import", "synchronized", "volatile", "transient", "native",
+      "strictfp", "instanceof", "null", "true", "false", "record", "var",
+      "throws", "sealed", "permits", "yield"
+    ],
+    "type": [
+      "int", "long", "short", "byte", "char", "float", "double", "boolean",
+      "String", "Integer", "Long", "Double", "Float", "Boolean", "Character",
+      "Object", "List", "Map", "Set", "Optional", "Stream", "void"
+    ],
+    "function": [
+      "System", "out", "err", "println", "printf", "print", "equals",
+      "hashCode", "toString", "valueOf", "getMessage", "printStackTrace"
+    ]
+  },
+  "tokens": [
+    { "type": "comment.line",   "pattern": "//[^\\n]*" },
+    { "type": "comment.block",  "pattern": "/\\*[\\s\\S]*?\\*/" },
+    { "type": "string",         "pattern": "\"(?:[^\"\\\\\\n]|\\\\[\\s\\S])*\"" },
+    { "type": "string",         "pattern": "'(?:[^'\\\\\\n]|\\\\[\\s\\S])*'" },
+    { "type": "number",         "pattern": "\\b\\d[\\d_]*(?:\\.\\d+)?(?:[eE][+-]?\\d+)?[fFdDlL]?\\b|\\b0[xXbB][0-9a-fA-F_]+" },
+    { "type": "operator",       "pattern": "==|!=|<=|>=|&&|\\|\\||\\+\\+|--|\\+=|-=|\\*=|/=|[=<>+\\-*/%!&|^~?:]" },
+    { "type": "punctuation",    "pattern": "[()\\[\\]{};,.@]" },
+    { "type": "identifier",     "pattern": "[A-Za-z_$][\\w$]*" }
+  ]
+}

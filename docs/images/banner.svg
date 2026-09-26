@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="200" viewBox="0 0 860 200" role="img" aria-label="OneExtend banner">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4C1177"/>
+      <stop offset="0.55" stop-color="#7719AA"/>
+      <stop offset="1" stop-color="#9A4FD0"/>
+    </linearGradient>
+  </defs>
+  <rect width="860" height="200" rx="14" fill="url(#bg)"/>
+  <g font-family="Consolas, Menlo, monospace">
+    <rect x="46" y="46" width="108" height="108" rx="20" fill="#ffffff" opacity="0.14"/>
+    <rect x="46" y="46" width="108" height="108" rx="20" fill="none" stroke="#ffffff" stroke-opacity="0.45" stroke-width="2"/>
+    <text x="100" y="118" font-size="52" font-weight="bold" fill="#ffffff" text-anchor="middle">&lt;/&gt;</text>
+  </g>
+  <g font-family="Segoe UI, Microsoft YaHei, sans-serif" fill="#ffffff">
+    <text x="196" y="106" font-size="52" font-weight="700" letter-spacing="1">OneExtend</text>
+    <text x="198" y="146" font-size="19" opacity="0.95">Code blocks for OneNote · OneNote 代码块扩展插件</text>
+    <text x="198" y="174" font-size="14" opacity="0.75" font-family="Consolas, monospace">syntax highlighting · line numbers · PL/SQL beautifier · C# COM Add-in</text>
+  </g>
+</svg>

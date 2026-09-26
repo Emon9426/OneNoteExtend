@@ -1,0 +1,28 @@
+{
+  "id": "dark",
+  "name": "深色 Dark",
+  "background": "#161B22",
+  "lineNumberBackground": "#1C2128",
+  "titleBackground": "#21262D",
+  "fontFamily": "Consolas",
+  "fontSize": "10pt",
+  "colors": {
+    "plain": "#C9D1D9",
+    "keyword": "#FF7B72",
+    "controlKeyword": "#D2A8FF",
+    "type": "#7EE787",
+    "string": "#A5D6FF",
+    "number": "#79C0FF",
+    "comment": "#8B949E",
+    "function": "#FFA657",
+    "variable": "#79C0FF",
+    "tag": "#7EE787",
+    "attribute": "#79C0FF",
+    "operator": "#C9D1D9",
+    "bindVariable": "#D2A8FF",
+    "substitution": "#D2A8FF",
+    "builtinPackage": "#56D4DD",
+    "identifier": "#C9D1D9",
+    "lineNumber": "#484F58"
+  }
+}

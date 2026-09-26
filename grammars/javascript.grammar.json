@@ -1,0 +1,48 @@
+{
+  "$schema": "./schemas/grammar.schema.json",
+  "id": "javascript",
+  "name": "JavaScript (Node.js)",
+  "version": "1.0.0",
+  "formatter": "generic-brace",
+  "extensions": [".js", ".mjs", ".cjs"],
+  "detection": {
+    "patterns": [
+      "\\bfunction\\b",
+      "\\b(const|let)\\s+[A-Za-z_$]",
+      "=>",
+      "\\brequire\\s*\\(",
+      "module\\.exports",
+      "\\basync\\s+function\\b",
+      "\\bconsole\\.log\\s*\\(",
+      "\\bnode\\b"
+    ]
+  },
+  "keywords": {
+    "control": [
+      "if", "else", "for", "while", "do", "switch", "case", "default", "break",
+      "continue", "return", "throw", "try", "catch", "finally", "yield", "await"
+    ],
+    "keyword": [
+      "var", "let", "const", "function", "class", "extends", "super", "new",
+      "delete", "typeof", "instanceof", "in", "of", "this", "self", "void",
+      "null", "undefined", "true", "false", "export", "import", "from", "as",
+      "async", "static", "get", "set", "debugger"
+    ],
+    "function": [
+      "console", "fetch", "Promise", "Map", "Set", "WeakMap", "WeakSet", "JSON",
+      "Math", "Object", "Array", "String", "Number", "Boolean", "Date",
+      "RegExp", "Error", "setTimeout", "setInterval", "clearTimeout",
+      "clearInterval", "require", "process", "Buffer"
+    ]
+  },
+  "tokens": [
+    { "type": "comment.line",   "pattern": "//[^\\n]*" },
+    { "type": "comment.block",  "pattern": "/\\*[\\s\\S]*?\\*/" },
+    { "type": "string.template","pattern": "`(?:[^`\\\\]|\\\\[\\s\\S])*`" },
+    { "type": "string",         "pattern": "'(?:[^'\\\\\\n]|\\\\[\\s\\S])*'|\"(?:[^\"\\\\\\n]|\\\\[\\s\\S])*\"" },
+    { "type": "number",         "pattern": "\\b\\d[\\d_]*(?:\\.\\d+)?(?:[eE][+-]?\\d+)?\\b|\\b0[xXbBoO][0-9a-fA-F_]+" },
+    { "type": "operator",       "pattern": "=>|===|!==|==|!=|<=|>=|&&|\\|\\||\\+\\+|--|\\+=|-=|\\*=|/=|%=|\\?\\?|\\?\\.|\\.\\.\\.|[=<>+\\-*/%!&|^~?:]" },
+    { "type": "punctuation",    "pattern": "[()\\[\\]{};,.]" },
+    { "type": "identifier",     "pattern": "[A-Za-z_$][\\w$]*" }
+  ]
+}

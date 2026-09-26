@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="560" viewBox="0 0 880 560" role="img" aria-label="OneExtend architecture">
+  <style>
+    .t{font-family:Segoe UI,Microsoft YaHei,sans-serif}
+    .m{font-family:Consolas,Menlo,monospace}
+    .lay{stroke-width:1.5}
+  </style>
+  <rect width="880" height="560" fill="#ffffff"/>
+  <text x="440" y="36" text-anchor="middle" class="t" font-size="20" font-weight="700" fill="#24292F">OneExtend 分层架构 · Layered Architecture</text>
+
+  <!-- L7 host -->
+  <rect x="90" y="60" width="700" height="56" rx="10" fill="#FBE9EE" stroke="#E7B6BD" class="lay"/>
+  <text x="440" y="84" text-anchor="middle" class="m" font-size="15" font-weight="bold" fill="#86198F">⑦ OneExtend.Addin (net48 · COM host)</text>
+  <text x="440" y="104" text-anchor="middle" class="t" font-size="12.5" fill="#57606A">IDTExtensibility2 入口 · 全局热键 · 模块引导 / COM entry · global hotkeys · module bootstrap</text>
+
+  <!-- L6 UI -->
+  <rect x="90" y="126" width="700" height="56" rx="10" fill="#F5EEFB" stroke="#D3B8EA" class="lay"/>
+  <text x="440" y="150" text-anchor="middle" class="m" font-size="15" font-weight="bold" fill="#7719AA">⑥ UI 层 WPF (OneExtend.CodeBlock.UI)</text>
+  <text x="440" y="170" text-anchor="middle" class="t" font-size="12.5" fill="#57606A">插入/编辑对话框 · 实时预览 / insert &amp; edit dialogs · live preview</text>
+
+  <!-- L5 core -->
+  <rect x="90" y="192" width="700" height="56" rx="10" fill="#EEF7F0" stroke="#B7DCC3" class="lay"/>
+  <text x="440" y="216" text-anchor="middle" class="m" font-size="15" font-weight="bold" fill="#1A7F37">⑤ 命令与模块层 OneExtend.Core (netstandard2.0)</text>
+  <text x="440" y="236" text-anchor="middle" class="t" font-size="12.5" fill="#57606A">CommandRegistry · ModuleHost · EventBus —— 可扩展性核心 / the extensibility core</text>
+
+  <!-- L4 feature modules -->
+  <rect x="90" y="258" width="700" height="56" rx="10" fill="#EEF7F0" stroke="#B7DCC3" class="lay"/>
+  <text x="440" y="282" text-anchor="middle" class="m" font-size="15" font-weight="bold" fill="#1A7F37">④ 功能域模块 Feature Modules</text>
+  <text x="440" y="302" text-anchor="middle" class="t" font-size="12.5" fill="#57606A">CodeBlock（本期）｜Diagram / Formula / Snippets（未来 · future，零核心改动）</text>
+
+  <!-- L3 engine -->
+  <rect x="90" y="324" width="700" height="56" rx="10" fill="#F0F6FF" stroke="#B6CFF2" class="lay"/>
+  <text x="440" y="348" text-anchor="middle" class="m" font-size="15" font-weight="bold" fill="#0969DA">③ 渲染引擎 Rendering Engine (netstandard2.0)</text>
+  <text x="440" y="368" text-anchor="middle" class="t" font-size="12.5" fill="#57606A">Formatter（SQL / PL·SQL 美化）→ Tokenizer（语法包驱动）→ Theme → OneNote XML Builder</text>
+
+  <!-- L2 onenote -->
+  <rect x="90" y="390" width="700" height="56" rx="10" fill="#FFF8E9" stroke="#E8D3A1" class="lay"/>
+  <text x="440" y="414" text-anchor="middle" class="m" font-size="15" font-weight="bold" fill="#9A6700">② OneNote 集成层 OneExtend.OneNote</text>
+  <text x="440" y="434" text-anchor="middle" class="t" font-size="12.5" fill="#57606A">Interop 封装（页面 XML 读写 / 选区定位）—— 唯一 COM 触点 / the only COM touchpoint</text>
+
+  <!-- L1 infra -->
+  <rect x="90" y="456" width="700" height="56" rx="10" fill="#F6F8FA" stroke="#D8DEE4" class="lay"/>
+  <text x="440" y="480" text-anchor="middle" class="m" font-size="15" font-weight="bold" fill="#3C424B">① 基础设施 Infrastructure</text>
+  <text x="440" y="500" text-anchor="middle" class="t" font-size="12.5" fill="#57606A">JSON 设置 / 日志 / 语法包与主题加载 · settings · logging · grammar &amp; theme loaders</text>
+
+  <text x="440" y="542" text-anchor="middle" class="t" font-size="12" fill="#8B949E">依赖方向自上而下单向 · dependencies flow strictly downward</text>
+</svg>

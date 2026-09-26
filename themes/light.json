@@ -1,0 +1,28 @@
+{
+  "id": "light",
+  "name": "浅色 Light",
+  "background": "#FBFCFD",
+  "lineNumberBackground": "#F3F4F6",
+  "titleBackground": "#EEF0F3",
+  "fontFamily": "Consolas",
+  "fontSize": "10pt",
+  "colors": {
+    "plain": "#1F2328",
+    "keyword": "#0000FF",
+    "controlKeyword": "#AF00DB",
+    "type": "#267F99",
+    "string": "#A31515",
+    "number": "#098658",
+    "comment": "#008000",
+    "function": "#795E26",
+    "variable": "#001080",
+    "tag": "#800000",
+    "attribute": "#E50000",
+    "operator": "#24292F",
+    "bindVariable": "#8250DF",
+    "substitution": "#8250DF",
+    "builtinPackage": "#267F99",
+    "identifier": "#1F2328",
+    "lineNumber": "#8B949E"
+  }
+}

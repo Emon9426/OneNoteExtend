@@ -1,0 +1,50 @@
+{
+  "$schema": "./schemas/grammar.schema.json",
+  "id": "tsql",
+  "name": "SQL (T-SQL)",
+  "version": "1.0.0",
+  "basedOn": "sql-ansi",
+  "caseInsensitive": true,
+  "formatter": "sql-structured",
+  "extensions": [".tsql"],
+  "detection": {
+    "patterns": [
+      "\\bGETDATE\\s*\\(",
+      "\\bISNULL\\s*\\(",
+      "\\bTOP\\s+\\d+",
+      "@@ROWCOUNT",
+      "\\bN'#?[A-Za-z_]",
+      "\\bDECLARE\\s+@"
+    ]
+  },
+  "keywords": {
+    "control": [ "WHILE", "BREAK", "PRINT", "WAITFOR" ],
+    "keyword": [
+      "TOP", "IDENTITY", "OUTPUT", "MERGE", "APPLY", "PIVOT", "UNPIVOT",
+      "OFFSET", "FETCH", "NEXT", "ONLY", "NOCOUNT", "TRY", "CATCH", "THROW",
+      "PROC", "PROCEDURE", "EXEC", "EXECUTE", "SP_", "GO", "USE", "DENY",
+      "TRUNCATE", "IDENTITY_INSERT"
+    ],
+    "type": [
+      "NVARCHAR", "DATETIME2", "DATETIME", "SMALLDATETIME", "BIT", "MONEY",
+      "SMALLMONEY", "UNIQUEIDENTIFIER", "XML", "SQL_VARIANT", "VARBINARY",
+      "IMAGE", "NTEXT"
+    ],
+    "function": [
+      "GETDATE", "GETUTCDATE", "SYSDATETIME", "DATEADD", "DATEDIFF", "DATENAME",
+      "DATEPART", "ISNULL", "IIF", "CHOOSE", "STRING_AGG", "FORMAT", "TRY_CAST",
+      "TRY_CONVERT", "ROW_NUMBER", "NEWID"
+    ]
+  },
+  "tokens": [
+    { "type": "comment.line",    "pattern": "--[^\\n]*" },
+    { "type": "comment.block",   "pattern": "/\\*[\\s\\S]*?\\*/" },
+    { "type": "string",          "pattern": "N?'(?:[^']|'')*'" },
+    { "type": "variable",        "pattern": "@[A-Za-z_][\\w$]*" },
+    { "type": "bindvar",         "pattern": ":[A-Za-z_][\\w$]*" },
+    { "type": "number",          "pattern": "\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?" },
+    { "type": "operator",        "pattern": "\\|\\||<>|!=|<=|>=|=|<|>|\\+|-|\\*|/|%|\\^" },
+    { "type": "punctuation",     "pattern": "[(),.;\\[\\]]" },
+    { "type": "identifier",      "pattern": "[A-Za-z_][\\w$]*" }
+  ]
+}

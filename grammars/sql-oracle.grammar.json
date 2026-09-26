@@ -1,0 +1,65 @@
+{
+  "$schema": "./schemas/grammar.schema.json",
+  "id": "plsql",
+  "name": "PL/SQL (Oracle)",
+  "version": "1.0.0",
+  "basedOn": "sql-ansi",
+  "caseInsensitive": true,
+  "formatter": "plsql-structured",
+  "extensions": [".pkb", ".pks", ".trg", ".fnc", ".prc", ".pls", ".bdy", ".spb"],
+  "detection": {
+    "patterns": [
+      "\\bDBMS_[A-Z0-9_]+",
+      "\\bUTL_[A-Z0-9_]+",
+      "\\bSYSDATE\\b",
+      "\\bROWNUM\\b",
+      "%TYPE\\b",
+      "\\bNVL\\b",
+      "\\bDECLARE\\b",
+      "\\bBEGIN\\b[\\s\\S]{0,600}\\bEND\\b",
+      "\\bEXCEPTION\\b",
+      "\\bRAISE_APPLICATION_ERROR\\b",
+      "q'\\["
+    ]
+  },
+  "keywords": {
+    "control": [
+      "IF", "ELSIF", "ELSE", "LOOP", "FOR", "WHILE", "EXIT", "RETURN", "RAISE",
+      "CONTINUE", "GOTO", "CASE", "WHEN", "THEN", "END"
+    ],
+    "keyword": [
+      "DECLARE", "BEGIN", "EXCEPTION", "IS", "AS", "CURSOR", "RECORD", "TYPE",
+      "SUBTYPE", "PROCEDURE", "FUNCTION", "PACKAGE", "BODY", "TRIGGER", "PRAGMA",
+      "IN", "OUT", "NOCOPY", "CONSTANT", "COMMIT", "ROLLBACK", "SAVEPOINT",
+      "MERGE", "RETURNING", "BULK", "COLLECT", "FORALL", "LIMIT", "RENAME",
+      "DEFINER", "CURRENT_USER", "NOLOAD", "SPECIFICATION", "ELSE", "SEPARATE"
+    ],
+    "type": [
+      "NUMBER", "PLS_INTEGER", "BINARY_INTEGER", "SIMPLE_INTEGER", "VARCHAR2",
+      "NVARCHAR2", "CHAR", "NCHAR", "CLOB", "NCLOB", "BLOB", "BFILE", "RAW",
+      "LONG", "DATE", "BOOLEAN", "XMLTYPE", "SYS_REFCURSOR", "REF", "ROWTYPE",
+      "UROWID", "TIMESTAMP", "INTERVAL"
+    ],
+    "function": [
+      "NVL", "NVL2", "DECODE", "SYSDATE", "SYSTIMESTAMP", "TO_CHAR", "TO_DATE",
+      "TO_NUMBER", "TO_TIMESTAMP", "TRUNC", "ADD_MONTHS", "MONTHS_BETWEEN",
+      "LAST_DAY", "INSTR", "SUBSTR", "LPAD", "RPAD", "ROWNUM", "NEXTVAL",
+      "CURRVAL", "RAISE_APPLICATION_ERROR", "SQLERRM", "SQLCODE", "USERENV",
+      "VSIZE", "ASCII", "CHR", "INITCAP", "TRANSLATE", "SOUNDEX", "CONVERT"
+    ]
+  },
+  "tokens": [
+    { "type": "comment.line",      "pattern": "--[^\\n]*" },
+    { "type": "comment.block",     "pattern": "/\\*[\\s\\S]*?\\*/" },
+    { "type": "string.q",          "pattern": "q'\\[([^\\]]|\\][^'])*\\]'" },
+    { "type": "string",            "pattern": "'(?:[^']|'')*'" },
+    { "type": "bindvar",           "pattern": ":[A-Za-z_][\\w$]*" },
+    { "type": "substitution",      "pattern": "&[A-Za-z_][\\w$]*\\.?" },
+    { "type": "builtin.package",   "pattern": "\\b(?:DBMS_[A-Za-z0-9_]+|UTL_[A-Za-z0-9_]+|APEX_[A-Za-z0-9_]+|SYS_[A-Za-z0-9_]+|STANDARD)\\b" },
+    { "type": "attribute",         "pattern": "%(?:TYPE|ROWTYPE|NOTFOUND|FOUND|ISOPEN|ROWCOUNT)" },
+    { "type": "number",            "pattern": "\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?" },
+    { "type": "operator",          "pattern": ":=|=>|\\|\\||<>|!=|<=|>=|=|<|>|\\+|-|\\*|/|%|\\^" },
+    { "type": "punctuation",       "pattern": "[(),.;@]" },
+    { "type": "identifier",        "pattern": "[A-Za-z_][\\w$]*" }
+  ]
+}

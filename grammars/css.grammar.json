@@ -1,0 +1,31 @@
+{
+  "$schema": "./schemas/grammar.schema.json",
+  "id": "css",
+  "name": "CSS",
+  "version": "1.0.0",
+  "formatter": "generic-brace",
+  "extensions": [".css"],
+  "detection": {
+    "patterns": [
+      "[.#][a-zA-Z][\\w-]*\\s*\\{",
+      "@media\\b",
+      "\\b(margin|padding|color|font|background|display|border)\\s*:",
+      "[a-z]+\\s*:\\s*[^;]+;"
+    ]
+  },
+  "keywords": {
+    "keyword": [ "important" ]
+  },
+  "tokens": [
+    { "type": "comment.block",  "pattern": "/\\*[\\s\\S]*?\\*/" },
+    { "type": "keyword",       "pattern": "@[a-z-]+" },
+    { "type": "string",         "pattern": "\"[^\"]*\"|'[^']*'" },
+    { "type": "number",         "pattern": "#[0-9a-fA-F]{3,8}\\b|\\b\\d+(?:\\.\\d+)?(?:px|em|rem|%|vh|vw|vmin|vmax|pt|s|ms|fr|deg|ch)?\\b" },
+    { "type": "function",       "pattern": "\\b(?:rgba?|hsla?|calc|var|url|linear-gradient|radial-gradient|translate[XYZ]?|scale|rotate|cubic-bezier)\\b(?=\\s*\\()" },
+    { "type": "type",           "pattern": "[.#][A-Za-z][\\w-]*|::?[a-z-]+(?![\\w(])" },
+    { "type": "attribute",      "pattern": "[-a-zA-Z]+(?=\\s*:)" },
+    { "type": "operator",       "pattern": "[>~+*]" },
+    { "type": "punctuation",    "pattern": "[{}();:,\\[\\]]" },
+    { "type": "identifier",     "pattern": "[A-Za-z-][\\w-]*" }
+  ]
+}

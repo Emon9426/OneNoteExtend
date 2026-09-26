@@ -1,0 +1,38 @@
+{
+  "$schema": "./schemas/grammar.schema.json",
+  "id": "tsx",
+  "name": "React (JSX/TSX)",
+  "version": "1.0.0",
+  "basedOn": "typescript",
+  "formatter": "generic-brace",
+  "extensions": [".tsx", ".jsx"],
+  "detection": {
+    "patterns": [
+      "<[A-Z]\\w*",
+      "\\buseState\\b|\\buseEffect\\b|\\buseMemo\\b|\\buseCallback\\b",
+      "\\bReact\\b",
+      "className=",
+      "\\bprops\\.",
+      "</[a-zA-Z]"
+    ]
+  },
+  "keywords": {
+    "keyword": [ "jsx", "JSX", "Fragment" ],
+    "function": [
+      "useState", "useEffect", "useMemo", "useCallback", "useRef", "useContext",
+      "useReducer", "React", "memo", "createElement", "createContext"
+    ]
+  },
+  "tokens": [
+    { "type": "comment.line",   "pattern": "//[^\\n]*" },
+    { "type": "comment.block",  "pattern": "/\\*[\\s\\S]*?\\*/" },
+    { "type": "tag",            "pattern": "</?[A-Za-z][\\w.:-]*" },
+    { "type": "attribute",      "pattern": "[A-Za-z_][\\w:-]*(?=\\s*=\\s*[\"'{])" },
+    { "type": "string.template","pattern": "`(?:[^`\\\\]|\\\\[\\s\\S])*`" },
+    { "type": "string",         "pattern": "'(?:[^'\\\\\\n]|\\\\[\\s\\S])*'|\"(?:[^\"\\\\\\n]|\\\\[\\s\\S])*\"" },
+    { "type": "number",         "pattern": "\\b\\d[\\d_]*(?:\\.\\d+)?(?:[eE][+-]?\\d+)?\\b" },
+    { "type": "operator",       "pattern": "=>|===|!==|==|!=|<=|>=|&&|\\|\\||\\?\\?|\\?\\.|\\.\\.\\.|[=<>+\\-*/%!&|^~?:]" },
+    { "type": "punctuation",    "pattern": "[()\\[\\]{};,.]" },
+    { "type": "identifier",     "pattern": "[A-Za-z_$][\\w$]*" }
+  ]
+}

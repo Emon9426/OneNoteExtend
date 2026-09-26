@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OneExtend Grammar Pack",
+  "description": "Declarative syntax definition for the OneExtend code block renderer",
+  "type": "object",
+  "required": [ "id", "name", "version", "tokens" ],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+    "name": { "type": "string" },
+    "version": { "type": "string" },
+    "basedOn": { "type": "string", "description": "Parent grammar id; keywords are merged (union), tokens/formatter/detection come from this pack when present" },
+    "caseInsensitive": { "type": "boolean", "default": false },
+    "formatter": { "type": "string", "enum": [ "sql-structured", "plsql-structured", "generic-brace", "generic-tag", "none" ] },
+    "extensions": { "type": "array", "items": { "type": "string" } },
+    "detection": {
+      "type": "object",
+      "properties": {
+        "patterns": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "keywords": {
+      "type": "object",
+      "description": "Word lists used to classify identifiers: control / keyword / type / function",
+      "additionalProperties": { "type": "array", "items": { "type": "string" } }
+    },
+    "tokens": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [ "type", "pattern" ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Token type: comment.line, comment.block, string, string.q, string.template, number, keyword, control, type, function, variable, tag, attribute, operator, punctuation, bindvar, substitution, builtin.package, identifier"
+          },
+          "pattern": { "type": "string", "description": ".NET regular expression, matched in declaration order (first match wins)" }
+        }
+      }
+    }
+  }
+}

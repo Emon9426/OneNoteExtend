@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="190" viewBox="0 0 880 190" role="img" aria-label="Rendering pipeline">
+  <style>.t{font-family:Segoe UI,Microsoft YaHei,sans-serif}.m{font-family:Consolas,Menlo,monospace}</style>
+  <rect width="880" height="190" fill="#ffffff"/>
+  <text x="440" y="32" text-anchor="middle" class="t" font-size="18" font-weight="700" fill="#24292F">代码块渲染管线 · Rendering Pipeline</text>
+  <g>
+    <rect x="24" y="62" width="112" height="66" rx="10" fill="#F6F8FA" stroke="#D8DEE4" stroke-width="1.5"/>
+    <text x="80" y="90" text-anchor="middle" class="t" font-size="13.5" font-weight="600" fill="#24292F">源码输入</text>
+    <text x="80" y="110" text-anchor="middle" class="t" font-size="11" fill="#57606A">source in</text>
+
+    <text x="146" y="102" class="m" font-size="16" fill="#7719AA">→</text>
+
+    <rect x="160" y="62" width="118" height="66" rx="10" fill="#FFF8E9" stroke="#E8D3A1" stroke-width="1.5"/>
+    <text x="219" y="84" text-anchor="middle" class="t" font-size="13.5" font-weight="600" fill="#9A6700">Formatter</text>
+    <text x="219" y="103" text-anchor="middle" class="t" font-size="10.5" fill="#57606A">SQL/PL·SQL 结构化美化</text>
+    <text x="219" y="118" text-anchor="middle" class="t" font-size="10.5" fill="#57606A">缩进 · 大小写 · AND/OR 对齐</text>
+
+    <text x="288" y="102" class="m" font-size="16" fill="#7719AA">→</text>
+
+    <rect x="302" y="62" width="112" height="66" rx="10" fill="#F0F6FF" stroke="#B6CFF2" stroke-width="1.5"/>
+    <text x="358" y="90" text-anchor="middle" class="t" font-size="13.5" font-weight="600" fill="#0969DA">Tokenizer</text>
+    <text x="358" y="110" text-anchor="middle" class="t" font-size="11" fill="#57606A">语法包驱动</text>
+
+    <text x="428" y="102" class="m" font-size="16" fill="#7719AA">→</text>
+
+    <rect x="442" y="62" width="100" height="66" rx="10" fill="#F5EEFB" stroke="#D3B8EA" stroke-width="1.5"/>
+    <text x="492" y="90" text-anchor="middle" class="t" font-size="13.5" font-weight="600" fill="#7719AA">Theme</text>
+    <text x="492" y="110" text-anchor="middle" class="t" font-size="11" fill="#57606A">token → 颜色</text>
+
+    <text x="556" y="102" class="m" font-size="16" fill="#7719AA">→</text>
+
+    <rect x="570" y="62" width="126" height="66" rx="10" fill="#EEF7F0" stroke="#B7DCC3" stroke-width="1.5"/>
+    <text x="633" y="84" text-anchor="middle" class="t" font-size="13.5" font-weight="600" fill="#1A7F37">行号 + XML</text>
+    <text x="633" y="103" text-anchor="middle" class="t" font-size="10.5" fill="#57606A">双列对齐 / 内联前缀</text>
+    <text x="633" y="118" text-anchor="middle" class="t" font-size="10.5" fill="#57606A">one: 表格 + Meta</text>
+
+    <text x="710" y="102" class="m" font-size="16" fill="#7719AA">→</text>
+
+    <rect x="724" y="62" width="132" height="66" rx="10" fill="#FBE9EE" stroke="#E7B6BD" stroke-width="1.5"/>
+    <text x="790" y="84" text-anchor="middle" class="t" font-size="13.5" font-weight="600" fill="#86198F">写入 OneNote 页</text>
+    <text x="790" y="103" text-anchor="middle" class="t" font-size="10.5" fill="#57606A">Interop · 光标处插入</text>
+    <text x="790" y="118" text-anchor="middle" class="t" font-size="10.5" fill="#57606A">支持原位重编辑</text>
+  </g>
+  <text x="440" y="168" text-anchor="middle" class="t" font-size="12" fill="#8B949E">同一引擎驱动对话框预览与最终插入 —— 所见即所得 · one engine feeds both the preview and the page (WYSIWYG)</text>
+</svg>
